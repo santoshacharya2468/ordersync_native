@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "610395355413",
+    "project_id": "localnotify-47340",
+    "storage_bucket": "localnotify-47340.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:610395355413:android:4655cd925c5f263b6d511c",
+        "android_client_info": {
+          "package_name": "com.example.notifyapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "610395355413-vo1ut6hjtq5nc4h1qg14a03pq8dv2dua.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTvQ5Ub1G0Y4ZjmHdf_FHhD9vIes1jAuI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "610395355413-vo1ut6hjtq5nc4h1qg14a03pq8dv2dua.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:610395355413:android:efd4c278839043286d511c",
+        "android_client_info": {
+          "package_name": "com.orderpush.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "610395355413-vo1ut6hjtq5nc4h1qg14a03pq8dv2dua.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTvQ5Ub1G0Y4ZjmHdf_FHhD9vIes1jAuI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "610395355413-vo1ut6hjtq5nc4h1qg14a03pq8dv2dua.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
