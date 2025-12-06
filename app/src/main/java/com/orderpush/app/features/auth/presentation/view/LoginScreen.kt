@@ -1,6 +1,4 @@
 package com.orderpush.app.features.auth.presentation.view
-
-import AppTextField
 import android.widget.Toast
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -22,7 +20,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -33,31 +30,21 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
-import com.orderpush.app.core.views.AppButton
-import com.orderpush.app.core.views.AppButtonVariant
+import com.orderpush.app.core.router.LocalNavigation
+import com.orderpush.app.core.router.Screen
 import com.orderpush.app.features.auth.presentation.viewmodel.AuthViewModel
 import com.orderpush.app.features.auth.presentation.viewmodel.AuthState
-import com.orderpush.app.features.dashboard.presentation.view.HomeScreen
-import com.orderpush.app.features.kds.presentation.view.KdsDashboardScreen
 
-class LoginScreen : Screen {
-    @Composable
-    override fun Content() {
+@Composable
+fun LoginScreen() {
         val viewModel = hiltViewModel<AuthViewModel>()
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
         var passwordVisible by remember { mutableStateOf(false) }
         val loginState by viewModel.loginState.collectAsState()
-        val navigator = LocalNavigator.currentOrThrow
+        val navigator = LocalNavigation.current
         val context = LocalContext.current
-
-        // Animated background
         val infiniteTransition = rememberInfiniteTransition(label = "background")
         val animatedAlpha by infiniteTransition.animateFloat(
             initialValue = 0.7f,
@@ -83,7 +70,7 @@ class LoginScreen : Screen {
                 AuthState.LogoutSuccess ->{}
                 is AuthState.Success -> {
 
-                    navigator.replaceAll(KdsDashboardScreen())
+                    navigator.replaceAll(Screen.DashboardSelection)
                 }
             }
         }
@@ -298,7 +285,6 @@ class LoginScreen : Screen {
             }
         }
     }
-}
 
 @Composable
 private fun StyledTextField(
@@ -336,7 +322,7 @@ private fun StyledTextField(
                     imageVector = icon,
                     contentDescription = null,
 
-                )
+                    )
             },
             trailingIcon = if (isPassword) {
                 {
@@ -344,7 +330,7 @@ private fun StyledTextField(
                         onClick = { onPasswordVisibilityChange?.invoke() }
                     ) {
                         Icon(
-                            painter = painterResource(id =if (passwordVisible) R.drawable.outline_visibility else R.drawable.outline_visibility_off),
+                            painter = painterResource(id = if (passwordVisible) R.drawable.outline_visibility else R.drawable.outline_visibility_off),
                             contentDescription = if (passwordVisible) "Hide password" else "Show password",
                             tint = Color(0xFF9CA3AF)
                         )
@@ -363,5 +349,6 @@ private fun StyledTextField(
             ),
             singleLine = true
         )
+
     }
 }

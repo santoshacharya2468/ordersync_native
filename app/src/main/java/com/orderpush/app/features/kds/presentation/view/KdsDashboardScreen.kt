@@ -41,10 +41,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.hilt.getViewModel
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
+import com.orderpush.app.core.router.LocalNavigation
+import com.orderpush.app.core.router.Screen
 import com.orderpush.app.core.viewmodel.NetworkViewModel
 import com.orderpush.app.core.views.SidebarNetworkStatus
 import com.orderpush.app.features.analytics.presentation.view.AnalyticsScreen
@@ -60,17 +58,16 @@ import com.orderpush.app.features.order.presentation.viewmodel.OrderViewModel
 import com.orderpush.app.features.printer.presentation.viewmodel.PrinterSelectionViewModel
 import kotlinx.coroutines.delay
 
-class KdsDashboardScreen : Screen {
-    @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
-    @Composable
-    override fun Content() {
-        val kdsSetting = getViewModel<KdsViewModel>().kdsSettings.collectAsState()
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@Composable
+fun KdsDashboardScreen()  {
+        val kdsSetting = hiltViewModel<KdsViewModel>().kdsSettings.collectAsState()
         var showRecallDialog by remember { mutableStateOf(false) }
         var showHoldOrderDialog by remember { mutableStateOf(false) }
         var showHoldOrderTimeSelectionDialog by remember { mutableStateOf(false) }
         val orderViewModel: OrderViewModel = hiltViewModel()
         val orderState by orderViewModel.uiState.collectAsState()
-        val navigator = LocalNavigator.currentOrThrow
+        val navigator = LocalNavigation.current
         val filter = orderViewModel.filterState.collectAsState()
         val networkViewModel = hiltViewModel<NetworkViewModel>()
         val connected = networkViewModel.isConnected.collectAsState()
@@ -188,12 +185,12 @@ class KdsDashboardScreen : Screen {
                                 contentDescription = "Analytics"
                             )
                         }, onClick = {
-                            navigator.push(AnalyticsScreen())
+                            navigator.push(Screen.Analytics)
                         }
                     )
                     KdsActionButton(
                         onClick = {
-                            navigator.push(KdsSettingsScreen())
+                            navigator.push(Screen.KdsSettings)
                         },
                         icon = {
                             Icon(
@@ -324,5 +321,5 @@ class KdsDashboardScreen : Screen {
                 )
             }
         }
-    }
+
 }

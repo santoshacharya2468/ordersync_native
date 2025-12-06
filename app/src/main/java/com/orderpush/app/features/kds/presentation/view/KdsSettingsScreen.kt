@@ -47,45 +47,37 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
+import com.orderpush.app.core.router.LocalNavigation
+import com.orderpush.app.core.router.Screen
 import com.orderpush.app.core.views.AppBarAction
 import com.orderpush.app.core.views.BaseView
 import com.orderpush.app.core.views.LogoutConfirmationDialog
-import com.orderpush.app.features.auth.presentation.view.LoginScreen
 import com.orderpush.app.features.auth.presentation.viewmodel.AuthState
 import com.orderpush.app.features.auth.presentation.viewmodel.AuthViewModel
 import com.orderpush.app.features.kds.presentation.viewmodel.KdsViewModel
-import com.orderpush.app.features.printer.presentation.view.PrinterConnectionView
 
-enum class SelectedScreen(val label:String,val icon: ImageVector){
-    General("General", Icons.Default.Settings),
-    DisplayModes("Display Modes", Icons.Default.Tv),
-    Sounds("Sounds", Icons.AutoMirrored.Filled.VolumeUp),
-   // TransitionTimes("Transition Times", Icons.Default.Timer),
-   // Orders("Orders", Icons.Default.Receipt),
-    FontsColors("Fonts & Colors", Icons.Default.Palette),
-    ScreenCommunication("Screen Communication", Icons.AutoMirrored.Filled.ScreenShare),
-    Printers("Printers", Icons.Default.Print)
+enum class SelectedScreen(val label:String,val icon: ImageVector,val screen: Screen){
+    General("General", Icons.Default.Settings,Screen.KdsGeneralSettings),
+    DisplayModes("Display Modes", Icons.Default.Tv, Screen.KdsDisplayModes),
+    Sounds("Sounds", Icons.AutoMirrored.Filled.VolumeUp, Screen.KdsSoundSettings),
+    FontsColors("Fonts & Colors", Icons.Default.Palette, Screen.KdsFontAndColors),
+    ScreenCommunication("Screen Communication", Icons.AutoMirrored.Filled.ScreenShare, Screen.KdsScreenCommunication),
+    Printers("Printers", Icons.Default.Print, Screen.PrinterTypeSelectionScreen)
 }
-
-class KdsSettingsScreen : Screen {
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    override fun Content() {
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun KdsSettingsScreen()  {
         var selectedMenu by remember { mutableStateOf(SelectedScreen.General) }
-        val kdsViewModel= hiltViewModel<KdsViewModel>()
-        val settings= kdsViewModel.kdsSettings.collectAsState()
         var showLogoutDialog by remember { mutableStateOf(false) }
         val authViewModel=hiltViewModel<AuthViewModel>()
-        val navigator= LocalNavigator.currentOrThrow
+        val navigator= LocalNavigation.current
         val context= LocalContext.current
         val authState=authViewModel.loginState.collectAsState()
+
         LaunchedEffect(authState.value) {
             if(authState.value is AuthState.LogoutSuccess){
                 Toast.makeText(context,"Logged out", Toast.LENGTH_LONG).show()
-                    navigator.replaceAll(LoginScreen())
+                    navigator.replaceAll(Screen.Login)
             }else if(authState.value is AuthState.Error){
                 Toast.makeText(context,(authState.value as AuthState.Error).message, Toast.LENGTH_LONG).show()
             }
@@ -103,66 +95,23 @@ class KdsSettingsScreen : Screen {
         }
         BaseView(
             title = "Settings",
-            actions = listOf(AppBarAction(
-                icon = Icons.AutoMirrored.Filled.ExitToApp,
-                onClick = {
-                    showLogoutDialog = true
-                },
-                contentDescription = "logout"
-            ))
+
         ) {
-            Row(modifier = Modifier.fillMaxSize()) {
-                // Left Sidebar
-                Column(
-                    modifier = Modifier
-                        .verticalScroll(rememberScrollState())
-                        .widthIn(max = 300.dp)
-                        .fillMaxHeight()
-                        .background(MaterialTheme.colorScheme.background)
-                        .padding(16.dp)
-
-                ) {
-
-                    SelectedScreen.entries.forEach {
-                        SettingsMenuItem(
-                            icon = it.icon,
-                            text =it.label,
-                            selected = it==selectedMenu,
-                            onClick = {
-                                selectedMenu=it
-                            }
-                        )
-                    }
-
-
-                }
-
-                AnimatedContent(selectedMenu){ state->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.surfaceContainer)
-                            .padding(8.dp)
-
-                    ) {
-                        when (state) {
-                            SelectedScreen.General -> KdsGeneralSettingsView(settings.value)
-                            SelectedScreen.DisplayModes -> KdsDisplaySettingsView(settings.value)
-                            SelectedScreen.Sounds -> KdsSoundSettingsView(settings.value)
-                         //   SelectedScreen.TransitionTimes -> KdsTransitionTimeSettingsView(settings.value)
-                           // SelectedScreen.Orders -> KdsOrderSettingsView(settings.value)
-                            SelectedScreen.FontsColors -> KdsFontAndColorSettingsView(settings.value)
-                            SelectedScreen.ScreenCommunication -> KdsSettingStationView(settings.value)
-                            SelectedScreen.Printers -> {
-                                PrinterConnectionView()
-                            }
+            Column {
+                SelectedScreen.entries.forEach {
+                    SettingsMenuItem(
+                        icon = it.icon,
+                        text =it.label,
+                        selected = it==selectedMenu,
+                        onClick = {
+                           selectedMenu= it
+                            navigator.push(it.screen)
                         }
-                    }
+                    )
+            }
                 }
             }
         }
-    }
-}
 @Composable
 fun SettingsMenuItem(
     icon: ImageVector,

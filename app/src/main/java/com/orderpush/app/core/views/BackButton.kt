@@ -6,16 +6,15 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
+import com.orderpush.app.core.router.LocalNavigation
 
 @Composable
 fun BackButton(){
-    val navigator = LocalNavigator.currentOrThrow
+    val navigator = LocalNavigation.current
     IconButton(
         onClick = {
 
-          if( navigator.canPop){
+          if( navigator.canPop()){
               navigator.pop()
          }
         }

@@ -10,6 +10,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,7 +38,7 @@ import com.orderpush.app.features.order.data.model.UpdateOrderItemRequest
 import com.orderpush.app.features.order.data.model.UpdateOrderRequest
 import com.orderpush.app.features.order.presentation.viewmodel.OrderUiState
 import com.orderpush.app.features.order.presentation.viewmodel.OrderViewModel
-import com.orderpush.app.features.order.ui.components.OrderTileView
+import com.orderpush.app.features.order.presentation.view.OrderTileView
 import java.util.UUID
 
 
@@ -68,13 +70,13 @@ fun RecallOrderView(station: Station?, onClose: () -> Unit) {
     }
     BaseView(
         title = "Recall orders",
-        actions = listOf(
-            AppBarAction(
-                icon = Icons.Default.Close,
-                contentDescription = "close",
+        actions = {
+            IconButton(
                 onClick = onClose
-            )
-        )
+            ){
+                Icon(imageVector = Icons.Default.Close, contentDescription = "close")
+            }
+        }
     ) {
         when (orderState.value) {
             is OrderUiState.Success -> {

@@ -18,9 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
+import com.orderpush.app.core.router.LocalNavigation
+import com.orderpush.app.core.router.Screen
 import com.orderpush.app.core.views.AppBarAction
 import com.orderpush.app.core.views.BaseView
 import com.orderpush.app.core.views.SegmentedTabView
@@ -32,20 +31,19 @@ import com.orderpush.app.features.order.data.model.OrderFilter
 import com.orderpush.app.features.order.presentation.ui.OrderDetailsScreen
 import com.orderpush.app.features.order.presentation.viewmodel.OrderUiState
 import com.orderpush.app.features.order.presentation.viewmodel.OrderViewModel
-import com.orderpush.app.features.order.ui.components.OrderTileView
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
-class OrderListingScreen : Screen
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun OrderListingScreen()
 {
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    override  fun Content() {
-        val viewModel: OrderViewModel = hiltViewModel()
+    val viewModel: OrderViewModel = hiltViewModel()
         val orderState by viewModel.uiState.collectAsState()
         var showOrderFilterDialog by remember { mutableStateOf(false) }
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         val scope = rememberCoroutineScope()
-        val navigator = LocalNavigator.currentOrThrow
+        val navigator = LocalNavigation.current
         val filter= viewModel.filterState.collectAsState()
         DashboardDrawer(
            drawerState=drawerState,
@@ -67,15 +65,7 @@ class OrderListingScreen : Screen
                     Icon(imageVector = Icons.Default.Menu, contentDescription = "menu")
                 }
             },
-            actions = listOf(
-                AppBarAction(
-                    icon = Icons.Default.FilterList,
-                    contentDescription = "filter menu",
-                    onClick = {
-                        showOrderFilterDialog = !showOrderFilterDialog
-                    }
-                )
-            )
+
         ) {
             Column(
                 modifier = Modifier.fillMaxSize()
@@ -190,7 +180,7 @@ class OrderListingScreen : Screen
                                         OrderTileView(
                                             order = order,
                                             onClick = {
-                                                navigator.push(OrderDetailsScreen(order.id))
+                                                navigator.push(Screen.OrderDetails(order.id))
                                             }
                                         )
                                     }
@@ -231,7 +221,7 @@ class OrderListingScreen : Screen
             }
         }
     }
-    }
+
 
 }
 

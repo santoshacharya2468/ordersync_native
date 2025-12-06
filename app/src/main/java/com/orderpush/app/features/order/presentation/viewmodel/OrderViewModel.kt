@@ -1,6 +1,7 @@
 package com.orderpush.app.features.order.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.orderpush.app.core.network.ConnectivityObserver
 import com.orderpush.app.core.session.SessionManager
 import com.orderpush.app.features.order.data.model.Order
 import com.orderpush.app.features.order.data.model.OrderFilter
@@ -10,11 +11,13 @@ import com.orderpush.app.features.order.data.repository.SocketOrderData
 import com.orderpush.app.features.order.domain.repository.OrderRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -31,12 +34,14 @@ sealed class OrderUiState {
 @HiltViewModel
 class OrderViewModel @Inject constructor(
     private val repository: OrderRepository,
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
+    private  val networkObserver: ConnectivityObserver
 ) : ViewModel() {
     init {
         fullSync()
         startPeriodicOrderSync()
         subscribeOrderEvents()
+        observeNetwork()
     }
 
     private val _filterState = MutableStateFlow<OrderFilter>(
@@ -73,20 +78,18 @@ class OrderViewModel @Inject constructor(
             }
         }
     }
-
     fun updateOrderItems(order: Order, request: List<UpdateOrderItemRequest>) {
 
         viewModelScope.launch {
             repository.markOrderItemReady(order, request)
         }
     }
-
     fun updateOrder(order: Order, request: UpdateOrderRequest) {
         viewModelScope.launch {
             repository.updateOrder(order, request)
         }
     }
-      fun fullSync(){
+    fun fullSync(){
         viewModelScope.launch {
             val filter=OrderFilter()
             try {
@@ -111,8 +114,6 @@ class OrderViewModel @Inject constructor(
                 catch (_: Exception){}
             }
     }
-
-
     private fun startPeriodicOrderSync() {
         viewModelScope.launch {
             while (true) {
@@ -123,8 +124,19 @@ class OrderViewModel @Inject constructor(
             }
         }
     }
-
     fun updateFilter(filter: OrderFilter) {
         _filterState.value = filter
+    }
+
+    @OptIn(FlowPreview::class)
+    private fun observeNetwork() {
+        viewModelScope.launch {
+            networkObserver.isConnected.debounce(500).collect { isConnected ->
+                if (isConnected) {
+                    // Trigger a sync when network is restored
+                    deltaSync()
+                }
+            }
+        }
     }
 }

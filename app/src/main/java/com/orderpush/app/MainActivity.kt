@@ -7,40 +7,45 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
+import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.content.ContextCompat
-import cafe.adriel.voyager.navigator.CurrentScreen
-import cafe.adriel.voyager.navigator.Navigator
-import com.orderpush.app.features.auth.presentation.view.LoginScreen
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.ui.NavDisplay
 import com.google.firebase.FirebaseApp
-import com.orderpush.app.core.session.SessionEventBus
+import com.orderpush.app.core.router.LocalNavigation
+import com.orderpush.app.core.router.NavigationViewModel
+import com.orderpush.app.core.router.Screen
 import com.orderpush.app.core.session.SessionManager
-import com.orderpush.app.features.dashboard.presentation.view.HomeScreen
+import com.orderpush.app.features.analytics.presentation.view.AnalyticsScreen
+import com.orderpush.app.features.auth.presentation.view.LoginScreen
+import com.orderpush.app.features.dashboard.presentation.view.DashboardScreen
+import com.orderpush.app.features.dashboard.presentation.view.DashboardSelectionScreen
 import com.orderpush.app.features.kds.presentation.view.KdsDashboardScreen
+import com.orderpush.app.features.kds.presentation.view.KdsDisplaySettingsScreen
+import com.orderpush.app.features.kds.presentation.view.KdsFontAndColorSettingsScreen
+import com.orderpush.app.features.kds.presentation.view.KdsGeneralSettingsScreen
+import com.orderpush.app.features.kds.presentation.view.KdsSettingStationScreen
+import com.orderpush.app.features.kds.presentation.view.KdsSettingsScreen
+import com.orderpush.app.features.kds.presentation.view.KdsSoundSettingsScreen
+import com.orderpush.app.features.order.presentation.ui.OrderDetailsScreen
+import com.orderpush.app.features.printer.presentation.view.PrinterConnectionScreen
+import com.orderpush.app.features.printer.presentation.view.PrinterTypeSelectionScreen
 import com.orderpush.app.ui.theme.OrderpushAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
+
 class MainActivity : ComponentActivity() {
     @Inject
     lateinit var sessionManager: SessionManager
-    @Inject
-    lateinit var  eventBus: SessionEventBus
     companion object {
         fun createIntent(context: Context): Intent {
             return Intent(context, MainActivity::class.java).apply {
@@ -64,6 +69,8 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    @OptIn(ExperimentalMaterial3AdaptiveApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this)
@@ -74,13 +81,95 @@ class MainActivity : ComponentActivity() {
             OrderpushAppTheme(
                 darkTheme = true
             ) {
-                Navigator(sessionManager.getAccessToken()?.let { KdsDashboardScreen() } ?: LoginScreen()){navigator->
-                    LaunchedEffect(Unit) {
-                        eventBus.logoutEvents.collect {
-                            navigator.replaceAll(LoginScreen())
+                val navigationViewModel=hiltViewModel<NavigationViewModel>()
+                CompositionLocalProvider(
+                    LocalNavigation provides navigationViewModel
+                ) {
+                    val listDetailStrategy = rememberListDetailSceneStrategy<Screen>()
+                    NavDisplay(
+                        backStack = navigationViewModel.backStack,
+                        sceneStrategy = listDetailStrategy,
+                        onBack = {
+                            navigationViewModel.pop()
+                        },
+                        entryProvider = entryProvider {
+                            entry<Screen.Login>{
+                                LoginScreen()
+                            }
+                            entry<Screen.KdsDashboard> {
+                                KdsDashboardScreen()
+                            }
+                            entry<Screen.KdsSettings>(
+                                metadata = ListDetailSceneStrategy.listPane(
+                                    detailPlaceholder = {
+                                        KdsGeneralSettingsScreen()
+                                    }
+                                ),
+
+                            ) {
+
+                                KdsSettingsScreen()
+                            }
+                            entry<Screen.Analytics> {
+                                AnalyticsScreen()
+                            }
+                            entry<Screen.Dashboard>(
+                                metadata = ListDetailSceneStrategy.listPane(sceneKey = "dashboard_orders")
+                            ) {
+                                DashboardScreen()
+                            }
+                            entry<Screen.PrinterConnection>(
+                                 metadata = ListDetailSceneStrategy.detailPane()
+                            ) {
+                                PrinterConnectionScreen(it.printerType)
+                            }
+                            entry<Screen.OrderDetails>(
+                                metadata = ListDetailSceneStrategy.detailPane(
+                                     sceneKey = "dashboard_orders"
+                                )
+                            ) {
+                                OrderDetailsScreen(it.id)
+                            }
+                            entry<Screen.KdsGeneralSettings>(
+                                metadata = ListDetailSceneStrategy.detailPane(),
+                            ) {
+                                KdsGeneralSettingsScreen()
+                            }
+                            entry<Screen.KdsDisplayModes>(
+                                metadata = ListDetailSceneStrategy.detailPane()
+                            ) {
+                                KdsDisplaySettingsScreen()
+                            }
+
+                            entry<Screen.KdsSoundSettings>(
+                                metadata = ListDetailSceneStrategy.detailPane()
+                            ) {
+                                KdsSoundSettingsScreen()
+                            }
+                            entry<Screen.KdsFontAndColors>(
+                                metadata = ListDetailSceneStrategy.detailPane()
+                            ) {
+                                KdsFontAndColorSettingsScreen()
+                            }
+
+                            entry<Screen.KdsScreenCommunication>(
+                                metadata = ListDetailSceneStrategy.detailPane()
+                            ) {
+                                KdsSettingStationScreen()
+                            }
+
+                            entry<Screen.PrinterTypeSelectionScreen>(
+                                metadata = ListDetailSceneStrategy.detailPane()
+                            ) {
+                                PrinterTypeSelectionScreen()
+                            }
+
+                            entry<Screen.DashboardSelection> {
+                                DashboardSelectionScreen()
+                            }
+
                         }
-                    }
-                    CurrentScreen()
+                    )
                 }
             }
         }

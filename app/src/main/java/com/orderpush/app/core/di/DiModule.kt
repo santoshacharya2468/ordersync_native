@@ -15,6 +15,7 @@ import com.orderpush.app.core.database.KdsDao
 import com.orderpush.app.core.database.OrderDao
 import com.orderpush.app.core.network.AuthInterceptor
 import com.orderpush.app.core.network.AuthInterceptor.TokenAuthenticator
+import com.orderpush.app.core.network.ConnectivityObserver
 import com.orderpush.app.core.network.NetworkConfiguration
 import com.orderpush.app.core.services.SocketManager
 import com.orderpush.app.core.session.SessionEventBus
@@ -50,6 +51,11 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 object  DiAppModule {
+
+    @Provides
+    fun provideConnectivityManager(@ApplicationContext appContext: Context): ConnectivityObserver{
+       return  ConnectivityObserver(appContext)
+    }
 
     @Provides
     @Singleton

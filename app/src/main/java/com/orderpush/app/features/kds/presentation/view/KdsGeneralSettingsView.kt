@@ -20,22 +20,29 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.orderpush.app.core.views.BaseView
 import com.orderpush.app.features.kds.presentation.viewmodel.KdsViewModel
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun KdsGeneralSettingsView(settings: KdsSettings){
+fun KdsGeneralSettingsScreen(){
     val viewModel= hiltViewModel<KdsViewModel>()
     val state=viewModel.deviceInfo.collectAsState()
     LaunchedEffect(UInt) {
         viewModel.setDeviceInfo()
     }
-  if(state.value!=null)  KdsInfoCard(
-        kdsName = state.value!!.name,
-        currentVersion = state.value!!.version,
-        ipAddress = state.value!!.ip,
-        identifier = state.value!!.id,
-    )
+    BaseView(
+        title = "General"
+    ) {
+        if(state.value!=null)  KdsInfoCard(
+            kdsName = state.value!!.name,
+            currentVersion = state.value!!.version,
+            ipAddress = state.value!!.ip,
+            identifier = state.value!!.id,
+        )
+    }
+
 }
 
 @Composable

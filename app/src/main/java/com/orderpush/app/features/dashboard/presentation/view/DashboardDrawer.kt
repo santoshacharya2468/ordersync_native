@@ -1,7 +1,6 @@
 package com.orderpush.app.features.dashboard.presentation.view
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,22 +13,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.AccountTree
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DeliveryDining
 import androidx.compose.material.icons.filled.Grade
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.LocalPizza
-import androidx.compose.material.icons.filled.LockClock
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SoupKitchen
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -42,12 +33,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
-import com.orderpush.app.features.kds.presentation.view.KdsDashboardScreen
-import kotlinx.coroutines.launch
+import com.orderpush.app.core.router.LocalNavigation
+import com.orderpush.app.core.router.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,7 +55,7 @@ fun DashboardDrawer(
         "KDS Mode" to Icons.Default.SoupKitchen,
         "Rider  Mode" to Icons.Default.DeliveryDining
     )
-    val navigator= LocalNavigator.currentOrThrow
+    val navigator= LocalNavigation.current
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -114,7 +102,7 @@ fun DashboardDrawer(
                                 label = { Text(title) },
 
                                 onClick = {
-                                    navigator.push(KdsDashboardScreen())
+                                    navigator.push(Screen.KdsDashboard)
 
                                 },
                                 modifier = Modifier

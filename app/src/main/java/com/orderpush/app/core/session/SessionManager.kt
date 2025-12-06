@@ -5,6 +5,7 @@ import javax.inject.Inject
 import androidx.core.content.edit
 import com.google.gson.Gson
 import com.orderpush.app.core.database.AppDatabase
+import com.orderpush.app.features.dashboard.presentation.view.DashboardType
 import com.orderpush.app.features.printer.presentation.viewmodel.BasePrinter
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -62,6 +63,20 @@ class SessionManager @Inject constructor(
         }
         return null
     }
+    fun switchDashboard(type: DashboardType){
+        prefs.edit {
+            putString("dashboard",gson.toJson(type))
+        }
+
+    }
+    fun getDashboard(): DashboardType? {
+        val dashboardJson = prefs.getString("dashboard", null)
+        if(dashboardJson!=null) {
+            return gson.fromJson<DashboardType>(dashboardJson, DashboardType::class.java)
+        }
+        return null
+        }
+
 }
 
 

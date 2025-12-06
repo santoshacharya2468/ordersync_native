@@ -9,16 +9,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import cafe.adriel.voyager.core.screen.Screen
 import com.orderpush.app.core.views.BaseView
 import com.orderpush.app.features.customer.data.model.CustomerFilter
 import com.orderpush.app.features.customer.presentation.viewModel.CustomerUIState
 import com.orderpush.app.features.customer.presentation.viewModel.CustomerViewModel
 
-class CustomersScreen: Screen {
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    override fun Content() {
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomersScreen() {
         val viewModel = hiltViewModel<CustomerViewModel>()
         val uiState by viewModel.uiState.collectAsState()
         LaunchedEffect(Unit) {
@@ -44,6 +42,6 @@ class CustomersScreen: Screen {
             }
         }
     }
-    }
+
 
 }

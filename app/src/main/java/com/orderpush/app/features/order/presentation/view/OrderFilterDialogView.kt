@@ -54,13 +54,7 @@ fun OrderFilterDialogView(
 
     BaseView(
         title = "Filter Orders",
-        actions = listOf(
-            AppBarAction(
-                icon = Icons.Default.Close,
-                contentDescription = "close dialog",
-                onClick = onClose
-            )
-        )
+
     ) {
         Column(
             modifier = modifier

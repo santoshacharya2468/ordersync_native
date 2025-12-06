@@ -2,6 +2,7 @@ package com.orderpush.app.features.printer.presentation.view
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,20 +26,24 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
+import com.orderpush.app.core.router.LocalNavigation
+import com.orderpush.app.core.router.Screen
+import com.orderpush.app.core.views.BaseView
 import com.orderpush.app.features.printer.presentation.viewmodel.PrinterType
-
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PrinterConnectionView(){
-    val navigator= LocalNavigator.currentOrThrow
-    Column {
-        PrinterTypeSelectionScreen(
-            onPrinterSelected = {
-                navigator.push(PrinterConnectionScreen(it))
-            }
-        )
+fun PrinterTypeSelectionScreen(){
+    val navigator= LocalNavigation.current
+    BaseView(
+         title = "Select printer type"
+    ) {
+        Column {
+            PrinterTypeSelectionScreen(
+                onPrinterSelected = {
+                    navigator.push(Screen.PrinterConnection(it))
+                }
+            )
+        }
     }
 }
 

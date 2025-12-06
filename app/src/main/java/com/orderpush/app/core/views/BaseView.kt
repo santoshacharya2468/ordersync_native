@@ -2,33 +2,15 @@
 
 package com.orderpush.app.core.views
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -38,17 +20,11 @@ import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.currentOrThrow
+import com.orderpush.app.core.router.LocalNavigation
 
 // Data classes for configuration
 data class AppBarAction(
@@ -81,7 +57,7 @@ fun BaseView(
     // AppBar Configuration
     title: String? = null,
     appBarType: AppBarType = AppBarType.Small,
-    actions: List<AppBarAction> = emptyList(),
+    actions:@Composable RowScope.() -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior? = null,
     appBarColors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
 
@@ -99,29 +75,24 @@ fun BaseView(
     // Content
     content: @Composable  () -> Unit
 ) {
-    val navigator = LocalNavigator.currentOrThrow
+    val navigator = LocalNavigation.current
     Scaffold(
         modifier = modifier.fillMaxSize(),
-
         topBar = {
             if (title != null) {
                 TopAppBar(
                     title = { Text(title) },
                     navigationIcon = {
-                        if(navigator.items.size >1){
+                        if(navigator.canPop()){
                             BackButton()
                         }
                         leading?.invoke()
                     },
                     actions = {
-                        actions.forEach { action ->
-                            IconButton(onClick = action.onClick) {
-                                Icon(
-                                    imageVector = action.icon,
-                                    contentDescription = action.contentDescription
-                                )
-                            }
-                        }
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            modifier = Modifier.padding(end = 20.dp)
+                        ) { actions() }
                     },
                     scrollBehavior = scrollBehavior,
                     colors = appBarColors
@@ -159,7 +130,9 @@ fun BaseView(
 
         content = {
 
-            Box(modifier = Modifier.padding(it).fillMaxSize()) {
+            Box(modifier = Modifier
+                .padding(it)
+                .fillMaxSize()) {
                 //column scope
                     content()
 

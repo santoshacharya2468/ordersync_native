@@ -16,12 +16,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,104 +37,121 @@ import com.orderpush.app.features.kds.data.model.KdsFontSize
 import com.orderpush.app.features.kds.data.model.KdsSettings
 import com.orderpush.app.features.kds.presentation.viewmodel.KdsViewModel
 import androidx.core.graphics.toColorInt
+import com.orderpush.app.core.views.BaseView
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun KdsFontAndColorSettingsView(
-    settings: KdsSettings,
+fun KdsFontAndColorSettingsScreen(
     viewModel: KdsViewModel = hiltViewModel()
 ) {
     val scrollState = rememberScrollState()
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-            .padding(16.dp)
+    val settings=viewModel.kdsSettings.collectAsState().value
+    BaseView(
+        title = "Fonts and colors"
     ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(16.dp)
+        ) {
 
-        // -------- FONT SIZE SECTION --------
-        Text(
-            text = "FONT SIZE",
-            style = MaterialTheme.typography.labelMedium,
-            color = Color.Gray,
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
+            // -------- FONT SIZE SECTION --------
+            Text(
+                text = "FONT SIZE",
+                style = MaterialTheme.typography.labelMedium,
+                color = Color.Gray,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
 
-        FontSizeSelectionSection(
-            selected = settings.fontSize,
-            onSelected = { selected ->
-                viewModel.saveKdsSettings(settings = settings.copy(
-                    fontSize = selected
-                ))
+            FontSizeSelectionSection(
+                selected = settings.fontSize,
+                onSelected = { selected ->
+                    viewModel.saveKdsSettings(
+                        settings = settings.copy(
+                            fontSize = selected
+                        )
+                    )
+                }
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // -------- STATUS COLORS SECTION --------
+            Text(
+                text = "STATUS COLORS",
+                style = MaterialTheme.typography.labelMedium,
+                color = Color.Gray,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+
+            ColorRow("On Time", settings.onTimeOrderColor) {
+                viewModel.saveKdsSettings(
+                    settings.copy(
+                        onTimeOrderColor = it
+                    )
+                )
             }
-        )
+            ColorRow("Warning", settings.warningOrderColor) {
+                viewModel.saveKdsSettings(
+                    settings.copy(
+                        warningOrderColor = it
+                    )
+                )
+            }
+            ColorRow("Late", settings.lateOrderColor) {
+                viewModel.saveKdsSettings(
+                    settings.copy(
+                        lateOrderColor = it
+                    )
+                )
+            }
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        // -------- STATUS COLORS SECTION --------
-        Text(
-            text = "STATUS COLORS",
-            style = MaterialTheme.typography.labelMedium,
-            color = Color.Gray,
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
+            // -------- ORDER TYPE COLORS SECTION --------
+            //        Text(
+            //            text = "ORDER TYPE",
+            //            style = MaterialTheme.typography.labelMedium,
+            //            color = Color.Gray,
+            //            modifier = Modifier.padding(vertical = 8.dp)
+            //        )
+            //
+            //        ColorRow("For Here", settings.forHereColor) { viewModel.openColorPicker("forHereColor") }
+            //        ColorRow("Drive Thru", settings.driveThruColor) { viewModel.openColorPicker("driveThruColor") }
+            //        ColorRow("CurbSide", settings.curbsideColor) { viewModel.openColorPicker("curbsideColor") }
+            //        ColorRow("To Go", settings.toGoColor) { viewModel.openColorPicker("toGoColor") }
+            //        ColorRow("Delivery", settings.deliveryColor) { viewModel.openColorPicker("deliveryColor") }
+            //        ColorRow("Pickup", settings.pickupColor) { viewModel.openColorPicker("pickupColor") }
 
-        ColorRow("On Time", settings.onTimeOrderColor) {
-            viewModel.saveKdsSettings(settings.copy(
-                onTimeOrderColor = it
-            ))
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // -------- TEXT COLORS --------
+            Text(
+                text = "ORDER PART TEXT COLOR",
+                style = MaterialTheme.typography.labelMedium,
+                color = Color.Gray,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+
+            ColorRow("Main Item", settings.mainTextColor) {
+                viewModel.saveKdsSettings(
+                    settings.copy(
+                        mainTextColor = it
+                    )
+                )
+            }
+            ColorRow("Modifier", settings.modifierTextColor) {
+                viewModel.saveKdsSettings(
+                    settings.copy(
+                        modifierTextColor = it
+                    )
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
         }
-        ColorRow("Warning", settings.warningOrderColor) {
-            viewModel.saveKdsSettings(settings.copy(
-                warningOrderColor = it
-            ))
-        }
-        ColorRow("Late", settings.lateOrderColor) {
-            viewModel.saveKdsSettings(settings.copy(
-                lateOrderColor = it
-            ))
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // -------- ORDER TYPE COLORS SECTION --------
-//        Text(
-//            text = "ORDER TYPE",
-//            style = MaterialTheme.typography.labelMedium,
-//            color = Color.Gray,
-//            modifier = Modifier.padding(vertical = 8.dp)
-//        )
-//
-//        ColorRow("For Here", settings.forHereColor) { viewModel.openColorPicker("forHereColor") }
-//        ColorRow("Drive Thru", settings.driveThruColor) { viewModel.openColorPicker("driveThruColor") }
-//        ColorRow("CurbSide", settings.curbsideColor) { viewModel.openColorPicker("curbsideColor") }
-//        ColorRow("To Go", settings.toGoColor) { viewModel.openColorPicker("toGoColor") }
-//        ColorRow("Delivery", settings.deliveryColor) { viewModel.openColorPicker("deliveryColor") }
-//        ColorRow("Pickup", settings.pickupColor) { viewModel.openColorPicker("pickupColor") }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // -------- TEXT COLORS --------
-        Text(
-            text = "ORDER PART TEXT COLOR",
-            style = MaterialTheme.typography.labelMedium,
-            color = Color.Gray,
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
-
-        ColorRow("Main Item", settings.mainTextColor) {
-            viewModel.saveKdsSettings(settings.copy(
-                mainTextColor = it
-            ))
-        }
-        ColorRow("Modifier", settings.modifierTextColor) {
-            viewModel.saveKdsSettings(settings.copy(
-                modifierTextColor = it
-            ))
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
     }
 }
 
@@ -181,7 +200,7 @@ fun ColorRow(title: String, colorHex: String, onColorSelected: ( newColor: Strin
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                showDialog=true
+                showDialog = true
             }
             .padding(vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,

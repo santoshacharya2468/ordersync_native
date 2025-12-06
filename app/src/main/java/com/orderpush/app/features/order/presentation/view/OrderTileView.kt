@@ -1,4 +1,4 @@
-package com.orderpush.app.features.order.ui.components
+package com.orderpush.app.features.order.presentation.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

@@ -16,25 +16,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import cafe.adriel.voyager.core.screen.Screen
 import com.orderpush.app.core.views.BaseView
 import com.orderpush.app.features.printer.presentation.viewmodel.BasePrinter
 import com.orderpush.app.features.printer.presentation.viewmodel.PrinterSelectionViewModel
 import com.orderpush.app.features.printer.presentation.viewmodel.PrinterType
 import kotlinx.coroutines.launch
 
-
-class PrinterConnectionScreen(val printerType: PrinterType) : Screen {
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    override fun Content() {
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PrinterConnectionScreen( printerType: PrinterType){
         val viewModel = hiltViewModel<PrinterSelectionViewModel>()
         val scope = rememberCoroutineScope()
-
         LaunchedEffect(printerType) {
             viewModel.scanForPrinters(printerType)
         }
-
         BaseView(title = "Available Printers") {
             Column(
                 modifier = Modifier
@@ -146,7 +141,7 @@ class PrinterConnectionScreen(val printerType: PrinterType) : Screen {
                 }
             }
         }
-    }
+
 }
 
 @Composable

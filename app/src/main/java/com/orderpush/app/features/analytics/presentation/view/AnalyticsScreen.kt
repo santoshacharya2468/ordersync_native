@@ -19,19 +19,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.core.screen.Screen
 import com.orderpush.app.core.views.BaseView
 
-class AnalyticsScreen : Screen {
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    override fun Content() {
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AnalyticsScreen()  {
+
         BaseView(
             title = "Analytics"
         ) {
             AnalyticsContent()
         }
-    }
+
 }
 
 @Composable

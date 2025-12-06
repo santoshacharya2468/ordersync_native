@@ -20,34 +20,30 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import cafe.adriel.voyager.core.screen.Screen
 import com.orderpush.app.core.views.BaseView
 import com.orderpush.app.features.order.data.model.*
 import com.orderpush.app.features.order.presentation.viewmodel.OrderDetailsUiState
 import com.orderpush.app.features.order.presentation.viewmodel.OrderDetailsViewModel
-
-class OrderDetailsScreen(val orderId: String) : Screen {
-    @Composable
-    override fun Content() {
+@Composable
+fun OrderDetailsScreen( orderId: String)  {
         val viewModel = hiltViewModel<OrderDetailsViewModel>()
         val uiState by viewModel.uiState.collectAsState()
-
         LaunchedEffect(Unit) {
             viewModel.getOrderDetails(orderId)
         }
 
-        BaseView(title = "Order details") {
-            when (uiState) {
-                OrderDetailsUiState.Idle,
-                OrderDetailsUiState.Loading -> {}
-                is OrderDetailsUiState.Success -> {
-                    val order = (uiState as OrderDetailsUiState.Success).order
-                    OrderContent(order)
-                }
-                is OrderDetailsUiState.Error -> {}
+    BaseView(title = "Order details") {
+        when (uiState) {
+            OrderDetailsUiState.Idle,
+            OrderDetailsUiState.Loading -> {}
+            is OrderDetailsUiState.Success -> {
+                val order = (uiState as OrderDetailsUiState.Success).order
+                OrderContent(order)
             }
+            is OrderDetailsUiState.Error -> {}
         }
     }
+
 }
 
 @Composable
