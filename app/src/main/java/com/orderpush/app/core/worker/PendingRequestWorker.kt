@@ -20,17 +20,11 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okio.IOException
-import retrofit2.Retrofit
-
-
-
-
-
 @HiltWorker
 class SyncOrderUpdateWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted params: WorkerParameters,
-      private  val sessionManager: SessionManager,
+    private  val sessionManager: SessionManager,
     private  val networkConfiguration: NetworkConfiguration
 ) : CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result {
@@ -40,15 +34,11 @@ class SyncOrderUpdateWorker @AssistedInject constructor(
         val body = inputData.getString("body")
         return try {
             val client = OkHttpClient.Builder()
-
                 .addInterceptor(
                     AuthInterceptor(
-                        sessionManager,
-
-                        )
+                        sessionManager)
                 )
                 .build()
-
             val finalUrl = (networkConfiguration.baseUrl + url)
             val bodyJson = body?.toRequestBody("application/json".toMediaType())
             val request = Request.Builder()

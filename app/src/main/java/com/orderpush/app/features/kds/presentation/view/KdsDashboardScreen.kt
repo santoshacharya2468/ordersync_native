@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowColumn
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -18,13 +20,19 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Analytics
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,7 +53,6 @@ import com.orderpush.app.core.router.LocalNavigation
 import com.orderpush.app.core.router.Screen
 import com.orderpush.app.core.viewmodel.NetworkViewModel
 import com.orderpush.app.core.views.SidebarNetworkStatus
-import com.orderpush.app.features.analytics.presentation.view.AnalyticsScreen
 import com.orderpush.app.features.kds.data.model.OrderDisplayMode
 import com.orderpush.app.features.kds.presentation.viewmodel.KdsViewModel
 import com.orderpush.app.features.order.data.model.Order
@@ -60,42 +67,42 @@ import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun KdsDashboardScreen()  {
-        val kdsSetting = hiltViewModel<KdsViewModel>().kdsSettings.collectAsState()
-        var showRecallDialog by remember { mutableStateOf(false) }
-        var showHoldOrderDialog by remember { mutableStateOf(false) }
-        var showHoldOrderTimeSelectionDialog by remember { mutableStateOf(false) }
-        val orderViewModel: OrderViewModel = hiltViewModel()
-        val orderState by orderViewModel.uiState.collectAsState()
-        val navigator = LocalNavigation.current
-        val filter = orderViewModel.filterState.collectAsState()
-        val networkViewModel = hiltViewModel<NetworkViewModel>()
-        val connected = networkViewModel.isConnected.collectAsState()
-        val printerViewModel = hiltViewModel<PrinterSelectionViewModel>()
-        val holdOrderCount by remember {
-            derivedStateOf { if (orderState is OrderUiState.Success) (orderState as OrderUiState.Success).orders.filter { it.status == OrderStatus.Hold }.size else 0 }
-        }
-        val activeOrders by remember {
-            derivedStateOf { if (orderState is OrderUiState.Success) (orderState as OrderUiState.Success).orders.filter { it.status == OrderStatus.Confirmed } else emptyList() }
-        }
-        var selectedOrder by remember { mutableStateOf<Order?>(null) }
-        LaunchedEffect(kdsSetting.value.station) {
-            orderViewModel.updateFilter(
-                filter.value.copy(
-                    station = if (kdsSetting.value.station?.nextStationId == null) null else kdsSetting.value.station?.id,
-                    statues = listOf(
-                        OrderStatus.Confirmed,
-                        OrderStatus.Hold
-                    )
+fun KdsDashboardScreen() {
+    val kdsSetting = hiltViewModel<KdsViewModel>().kdsSettings.collectAsState()
+    var showRecallDialog by remember { mutableStateOf(false) }
+    var showHoldOrderDialog by remember { mutableStateOf(false) }
+    val orderViewModel: OrderViewModel = hiltViewModel()
+    val orderState by orderViewModel.uiState.collectAsState()
+    val navigator = LocalNavigation.current
+    val filter = orderViewModel.filterState.collectAsState()
+    val networkViewModel = hiltViewModel<NetworkViewModel>()
+    val connected = networkViewModel.isConnected.collectAsState()
+    val printerViewModel = hiltViewModel<PrinterSelectionViewModel>()
+    val holdOrderCount by remember {
+        derivedStateOf { if (orderState is OrderUiState.Success) (orderState as OrderUiState.Success).orders.filter { it.status == OrderStatus.Hold }.size else 0 }
+    }
+    val activeOrders by remember {
+        derivedStateOf { if (orderState is OrderUiState.Success) (orderState as OrderUiState.Success).orders.filter { it.status == OrderStatus.Confirmed } else emptyList() }
+    }
+    var selectedOrder by remember { mutableStateOf<Order?>(null) }
+    LaunchedEffect(kdsSetting.value.station) {
+        orderViewModel.updateFilter(
+            filter.value.copy(
+                station = if (kdsSetting.value.station?.nextStationId == null) null else kdsSetting.value.station?.id,
+                statues = listOf(
+                    OrderStatus.Confirmed,
+                    OrderStatus.Hold
                 )
             )
+        )
+    }
+    LaunchedEffect(connected.value) {
+        if (connected.value) {
+            delay(1000)
+            orderViewModel.deltaSync()
         }
-        LaunchedEffect(connected.value) {
-            if (connected.value) {
-                delay(1000)
-                orderViewModel.deltaSync()
-            }
-        }
+    }
+    Box {
         Scaffold {
             AnimatedVisibility(visible = showRecallDialog) {
                 BasicAlertDialog(
@@ -218,9 +225,8 @@ fun KdsDashboardScreen()  {
                             KdsOrderTileView(
                                 order,
                                 settings = kdsSetting.value,
-                                onHold = {
+                                onSelected = {
                                     selectedOrder = order
-                                    showHoldOrderTimeSelectionDialog = true
                                 },
                                 onComplete = {
                                     if (kdsSetting.value.station?.nextStationId == null) {
@@ -233,7 +239,6 @@ fun KdsDashboardScreen()  {
                                     } else {
                                         orderViewModel.updateOrderItems(
                                             order,
-
                                             request = order.orderItems?.map { item ->
                                                 UpdateOrderItemRequest(
                                                     ready = true,
@@ -246,19 +251,7 @@ fun KdsDashboardScreen()  {
 
                                     }
                                 },
-                                onPrint = {
 
-                                    printerViewModel.printReceipt(order)
-
-                                },
-                                onPriority = {
-                                    orderViewModel.updateOrder(
-                                        order,
-                                        request = UpdateOrderRequest(
-                                            priority = if (order.priorityAt == null) 2 else 0
-                                        )
-                                    )
-                                },
                                 onItemReady = {
                                     orderViewModel.updateOrderItems(
                                         order,
@@ -275,6 +268,38 @@ fun KdsDashboardScreen()  {
             }
         }
         AnimatedVisibility(
+            visible = selectedOrder != null,
+            Modifier
+                .align(Alignment.CenterEnd)
+        ) {
+        ///needed as animatedVisibility animates for few ms
+       if(selectedOrder!=null)   KdsOrderActionDrawerView(order = selectedOrder!!,
+               onUpdate = {payload->
+                   orderViewModel.updateOrder(selectedOrder!!, request = payload)
+                   selectedOrder=null
+               },
+              onPrint = {
+                  printerViewModel.printReceipt(selectedOrder!!)
+                  selectedOrder=null
+
+
+              },
+              onPriority = {
+                  orderViewModel.updateOrder(
+                      selectedOrder!!,
+                      request = UpdateOrderRequest(
+                          priority = if (selectedOrder!!.priorityAt == null) 2 else 0
+                      )
+                  )
+                  selectedOrder=null
+
+              },
+              onClose = {
+              selectedOrder=null
+
+          })
+        }
+        AnimatedVisibility(
             visible = showHoldOrderDialog,
             modifier = Modifier.padding(16.dp)
         ) {
@@ -283,43 +308,12 @@ fun KdsDashboardScreen()  {
                     showHoldOrderDialog = false
                 }, properties = DialogProperties(
                     usePlatformDefaultWidth = false,
-                    )
+                )
             ) {
                 HoldOrderView(station = kdsSetting.value.station, onClose = {
                     showHoldOrderDialog = false
                 })
             }
         }
-        AnimatedVisibility(
-            visible = showHoldOrderTimeSelectionDialog && selectedOrder != null,
-            modifier = Modifier.padding(16.dp)
-        ) {
-            BasicAlertDialog(
-                onDismissRequest = {
-                    showHoldOrderTimeSelectionDialog = false
-                    selectedOrder = null
-
-
-                }, properties = DialogProperties(
-                    usePlatformDefaultWidth = false,
-
-                    )
-            ) {
-                OrderHoldTimeSelectionView(
-                    onDismiss = {
-                        showHoldOrderTimeSelectionDialog = false
-                        selectedOrder = null
-                    },
-                    onSubmit = {
-                        orderViewModel.updateOrder(
-                            selectedOrder!!, request = UpdateOrderRequest(
-                                status = OrderStatus.Hold,
-                                holdUnit = it
-                            )
-                        )
-                    }
-                )
-            }
-        }
-
+    }
 }

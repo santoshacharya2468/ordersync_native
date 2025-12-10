@@ -80,9 +80,7 @@ import kotlin.math.abs
 fun KdsOrderTileView(order: Order,
                      onItemReady:(OrderItem)->Unit,
                      onComplete:()->Unit,
-                     onPrint:()->Unit,
-                     onPriority:()->Unit,
-                     onHold:()->Unit,
+                     onSelected:()->Unit,
                      settings: KdsSettings
                      ) {
     val listState = rememberLazyListState()
@@ -111,15 +109,12 @@ fun KdsOrderTileView(order: Order,
                 .fillMaxWidth()
 
         ) {
-            OrderHeaderView(order = order,settings)
+            OrderHeaderView(order = order, settings = settings, onComplete = onComplete)
             Spacer(modifier = Modifier.height(4.dp))
-
-
             Row {
                 if(order.priorityAt!=null) {
                     PriorityTimerView(order)
                 }
-
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.End),
                     verticalAlignment = Alignment.CenterVertically,
@@ -129,37 +124,18 @@ fun KdsOrderTileView(order: Order,
                         .padding(bottom = 4.dp)
 
                 )
-
                 {
-                    PopupMenuButton(
-                        items = listOf("Hold"),
-                        onItemClick = {
-                            if(it=="Hold"){
-                                onHold()
-                            }
+                    IconButton(
+                        modifier = Modifier.size(30.dp),
+                        onClick = {
+                            onSelected()
                         }
-                    )
-                    KdsCardButton(
-                        onClick = onPriority,
-                        label = "priority",
-                        imageVector = Icons.Default.Star,
-                        iconColor = if (order.priorityAt != null) Color(0xFFFBC02D) else null
-                    )
-                    KdsCardButton(
-                        onClick = onPrint,
-                        label = "print order",
-                        imageVector = Icons.Default.Print
-                    )
-                    KdsCardButton(
-                        onClick = onComplete,
-                        label = "mark order ready",
-                        imageVector = Icons.Default.Check
-                    )
+                    ) {
+                        Icon(imageVector = Icons.Default.MoreVert, contentDescription = "more action")
+                    }
                 }
             }
-
             Box(
-
             ){
                 LazyColumn(
                     modifier = Modifier
@@ -251,7 +227,9 @@ fun ScrollIndicatorButton(icon: ImageVector,onClick:()->Unit,modifier: Modifier)
 }
 
 @Composable
-fun OrderHeaderView(order: Order,settings: KdsSettings){
+fun OrderHeaderView(order: Order,
+                    onComplete: () -> Unit,
+                    settings: KdsSettings){
     val now = remember { mutableStateOf(Clock.System.now()) }
     LaunchedEffect(Unit) {
         while (true) {
@@ -282,6 +260,7 @@ fun OrderHeaderView(order: Order,settings: KdsSettings){
             .background(backgroundColor.toUIColor())
             .fillMaxWidth()
             .padding(4.dp)
+            .clickable(onClick = onComplete)
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
