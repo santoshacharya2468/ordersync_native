@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.orderpush.app.core.network.isSuccess
 import com.orderpush.app.core.services.getDeviceInfo
+import com.orderpush.app.core.session.SessionEventBus
 import com.orderpush.app.core.session.SessionManager
 import com.orderpush.app.features.auth.data.model.LinkedDevice
 import com.orderpush.app.features.auth.data.model.UpdateDeviceRequest
@@ -23,7 +24,8 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class AuthViewModel @Inject constructor  (private val repository: AuthRepository, private  val sessionManager: SessionManager,
-  @ApplicationContext  private  val context: Context
+  @ApplicationContext  private  val context: Context,
+                                          val eventBus: SessionEventBus
     ) : ViewModel() {
 
     private val _loginState = MutableStateFlow<AuthState>(AuthState.Idle)
@@ -44,6 +46,7 @@ class AuthViewModel @Inject constructor  (private val repository: AuthRepository
                     sessionManager.setDeviceId(device.id)
                     Toast.makeText(context, "Device linked successfully", Toast.LENGTH_SHORT).show()
                     _loginState.value = AuthState.Success(response.data.user)
+
                 } else {
                     _loginState.value = AuthState.Error(response.message ?: "Unknown error")
                 }
@@ -60,6 +63,7 @@ class AuthViewModel @Inject constructor  (private val repository: AuthRepository
                     sessionManager.clearSession()
                     _loginState.value = AuthState.LogoutSuccess
                     _linkDevice.value = null
+                    eventBus.emitLogout()
                 }else{
                     _loginState.value = AuthState.Error(response.message?:"something went wrong")
                 }
@@ -68,6 +72,7 @@ class AuthViewModel @Inject constructor  (private val repository: AuthRepository
                 sessionManager.clearSession()
                 _loginState.value = AuthState.LogoutSuccess
                 _linkDevice.value = null
+                eventBus.emitLogout()
             }
         }
     }

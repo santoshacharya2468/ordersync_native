@@ -23,12 +23,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.ScreenShare
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Print
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Tv
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -71,17 +73,7 @@ fun KdsSettingsScreen()  {
         var showLogoutDialog by remember { mutableStateOf(false) }
         val authViewModel=hiltViewModel<AuthViewModel>()
         val navigator= LocalNavigation.current
-        val context= LocalContext.current
-        val authState=authViewModel.loginState.collectAsState()
 
-        LaunchedEffect(authState.value) {
-            if(authState.value is AuthState.LogoutSuccess){
-                Toast.makeText(context,"Logged out", Toast.LENGTH_LONG).show()
-                    navigator.replaceAll(Screen.Login)
-            }else if(authState.value is AuthState.Error){
-                Toast.makeText(context,(authState.value as AuthState.Error).message, Toast.LENGTH_LONG).show()
-            }
-        }
         if (showLogoutDialog) {
             LogoutConfirmationDialog(
                 onConfirm = {
@@ -95,6 +87,15 @@ fun KdsSettingsScreen()  {
         }
         BaseView(
             title = "Settings",
+            actions = {
+                IconButton(
+                    onClick = {
+                        showLogoutDialog=true
+                    }
+                ) {
+                    Icon(imageVector = Icons.Default.ExitToApp, contentDescription = "logout", )
+                }
+            }
 
         ) {
             Column {

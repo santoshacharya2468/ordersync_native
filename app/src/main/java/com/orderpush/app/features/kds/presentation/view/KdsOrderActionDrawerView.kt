@@ -1,6 +1,8 @@
 package com.orderpush.app.features.kds.presentation.view
 
+import android.graphics.drawable.Icon
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -81,25 +83,29 @@ fun KdsOrderActionDrawerView(onClose:()->Unit,
             }
 
             // Priority (Star)
-            DrawerActionButton(onClick =
+            KdsActionButton(onClick =
                 onPriority
-            , label = "Priority", icon = Icons.Default.Star)
+            , text =if(order.priority>1) "De-Priority" else "Priority", icon = { Icon(imageVector = Icons.Default.Star,
+
+                    contentDescription = "Priority",
+
+                ) })
 
             // Print
-            DrawerActionButton(onClick =
+            KdsActionButton(onClick =
                 onPrint
 
             ,
-                label = "Print",
-                icon = Icons.Default.Print
+                text = "Print",
+                icon = { Icon(imageVector =     Icons.Default.Print, contentDescription = "print order") }
                 )
 
 
-            DrawerActionButton(onClick = {
+            KdsActionButton(onClick = {
                 showHoldOrderTimeSelectionDialog=true
             },
-                label = "Hold",
-                icon = Icons.Default.Pause
+                text =if(order.status== OrderStatus.Hold) "Release" else  "Hold",
+                icon = { Icon(Icons.Default.Pause, contentDescription = "hold order") }
                 )
         }
 
@@ -132,24 +138,3 @@ fun KdsOrderActionDrawerView(onClose:()->Unit,
 
 }
 
-@Composable
-fun DrawerActionButton(onClick:()->Unit,label:String,icon:ImageVector){
-    Box(
-        modifier = Modifier.size(60.dp).background(color = MaterialTheme.colorScheme.onBackground,
-             shape = RoundedCornerShape(4.dp)
-            )
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxSize().clickable(onClick = onClick)
-        ) {
-            Icon(icon, contentDescription = label, tint = MaterialTheme.colorScheme.background)
-            Text(label, style = MaterialTheme.typography.titleMedium.copy(
-                color = MaterialTheme.colorScheme.background
-
-            ))
-
-        }
-    }
-}

@@ -12,14 +12,20 @@ import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
 import com.orderpush.app.features.customer.data.model.Customer
 import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 
 enum class OrderMode{
     Delivery,Pickup,Dine_In
 }
 
+fun OrderMode.namePlaceHolder():String{
+      return  this.name.replace("_"," ")
+}
+
 enum  class OrderStatus{
-    Received, Confirmed,Hold, Preparing, Ready, Picked_up, Delivered, Cancelled
+    Received, Confirmed,Hold, Preparing, Ready, Picked_up, Delivered, Cancelled,Completed
 }
 
 enum class OrderItemStatus{
@@ -48,7 +54,7 @@ data class Order(
     val priority: Int,
     val priorityAt:Instant?=null,
     val notes: String?,
-    val createdAt: String,
+    val createdAt: Instant,
     val updatedAt: String,
     val storeCustomer: Customer?,
     val orderItems: List<OrderItem>?,
@@ -116,3 +122,32 @@ fun OrderMode.icon():ImageVector{
 fun Order.isRecalled(): Boolean{
     return this.orderItems?.firstOrNull{it.status== OrderItemStatus.recall }!=null
 }
+
+
+fun Order.getFulfillmentTimeFormatted(): String {
+    val localDateTime = this.fulfillmentTime
+        .toLocalDateTime(TimeZone.currentSystemDefault())
+
+    val hour = localDateTime.hour
+    val minute = localDateTime.minute
+    val period = if (hour >= 12) "pm" else "am"
+    val displayHour = if (hour % 12 == 0) 12 else hour % 12
+
+    return String.format("%02d:%02d %s", displayHour, minute, period)
+}
+
+
+fun Order.nextStepStatus(): Pair< OrderStatus? , String?>{
+    return when(this.status){
+        OrderStatus.Cancelled-> Pair(null , null)
+        OrderStatus.Received -> Pair(OrderStatus.Confirmed,"Accept")
+        OrderStatus.Confirmed -> Pair(OrderStatus.Preparing,"Start preparing")
+        OrderStatus.Hold -> Pair(OrderStatus.Confirmed,"Release hold")
+        OrderStatus.Preparing -> Pair(OrderStatus.Ready,"Mark as ready")
+        OrderStatus.Ready -> Pair(OrderStatus.Completed,"Mark as completed")
+        OrderStatus.Picked_up -> Pair(null , null)
+        OrderStatus.Delivered -> Pair(null , null)
+        OrderStatus.Completed -> Pair(null , null)
+    }
+}
+

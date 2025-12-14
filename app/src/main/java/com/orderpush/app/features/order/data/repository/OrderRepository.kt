@@ -7,6 +7,7 @@ import com.orderpush.app.core.database.OrderDao
 import com.orderpush.app.core.extension.toApiResponse
 import com.orderpush.app.core.network.APIResponse
 import com.orderpush.app.core.network.NetworkConfiguration
+import com.orderpush.app.core.network.isSuccess
 import com.orderpush.app.core.services.SocketManager
 import com.orderpush.app.core.services.SocketOrderEvent
 import com.orderpush.app.core.session.SessionManager
@@ -90,7 +91,12 @@ class OrderRepositoryImpl @Inject constructor(private val api: OrderApi,
         val response= api.getOrderDetails(id,)
         return  response.toApiResponse()
     }
-  override  fun subscribeOrders(): Flow<SocketOrderData> {
+
+    override suspend fun getOrderDetailsFlow(id: String): Flow<Order?> {
+        return orderDao.getOrderDetails(id)
+    }
+
+    override  fun subscribeOrders(): Flow<SocketOrderData> {
       socketManager.init(networkConf.socketUrl)
       return socketManager.orderEvents
           .map { event ->
@@ -153,28 +159,29 @@ class OrderRepositoryImpl @Inject constructor(private val api: OrderApi,
 
     override suspend fun updateOrder(
         order: Order,
-        request: UpdateOrderRequest
+        payload: UpdateOrderRequest
     ):APIResponse<Order> {
         saveOrder(
             order.copy(
-                status = request.status ?: order.status,
-                printed = request.printed ?: order.printed,
-                priority = request.priority ?: order.priority,
-                mode = request.mode ?: order.mode,
+                status = payload.status ?: order.status,
+                printed = payload.printed ?: order.printed,
+                priority = payload.priority ?: order.priority,
+                mode = payload.mode ?: order.mode,
                 synced = false,
-                priorityAt = if(request.priority==null)order.priorityAt else if(request.priority==2) Clock.System.now() else null,
-                fulfillmentTime = if (request.fulfillmentTime != null) Instant.parse(request.fulfillmentTime) else order.fulfillmentTime
+                priorityAt = if(payload.priority==null)order.priorityAt else if(payload.priority==2) Clock.System.now() else null,
+                fulfillmentTime = if (payload.fulfillmentTime != null) Instant.parse(payload.fulfillmentTime) else order.fulfillmentTime
             )
         )
         try {
-            return api.updateOrder(order.id, request)
+         return  api.updateOrder(order.id, payload)
                 .toApiResponse()
+
         } catch (e: IOException) {
             enqueueOrderUpdateTask(
                 context = context,
                 method = "PATCH",
                 url = "orders/${order.id}",
-                body = gson.toJson(request)
+                body = gson.toJson(payload)
             )
 
             return APIResponse(status = 500, data = null, message = null)

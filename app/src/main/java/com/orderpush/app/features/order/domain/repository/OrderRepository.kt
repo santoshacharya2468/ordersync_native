@@ -16,6 +16,7 @@ interface OrderRepository {
      fun  getOrders( filter: OrderFilter) : Flow<List<Order>>
     suspend fun  saveOrder(order: Order)
     suspend fun  getOrderDetails(id: String): APIResponse<Order>
+    suspend fun getOrderDetailsFlow(id: String): Flow<Order?>
     fun subscribeOrders(): Flow<SocketOrderData>
     fun sendData(event:String,data: Any)
     fun socket(): Socket?

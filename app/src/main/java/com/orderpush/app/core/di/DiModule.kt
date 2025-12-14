@@ -30,6 +30,9 @@ import com.orderpush.app.features.customer.domain.repository.CustomerRepository
 import com.orderpush.app.features.kds.data.api.StationApi
 import com.orderpush.app.features.kds.data.repository.KdsRepositoryImpl
 import com.orderpush.app.features.kds.domain.repository.KdsRepository
+import com.orderpush.app.features.menuItem.data.api.MenuItemApi
+import com.orderpush.app.features.menuItem.data.repository.MenuItemRepositoryImpl
+import com.orderpush.app.features.menuItem.domain.repository.MenuItemRepository
 import com.orderpush.app.features.order.data.api.OrderApi
 import com.orderpush.app.features.order.data.repository.OrderRepositoryImpl
 import com.orderpush.app.features.order.domain.repository.OrderRepository
@@ -111,6 +114,7 @@ object  DiAppModule {
     }
 
 
+
         @Provides
         fun provideRetrofit(
             sessionManager: SessionManager, networkConf: NetworkConfiguration,
@@ -174,6 +178,7 @@ object  DiAppModule {
         ): AuthRepository {
             return AuthRepositoryImpl(api, context, sessionManager)
         }
+
 
         @Provides
         @Singleton

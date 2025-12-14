@@ -19,7 +19,7 @@ sealed interface Screen : NavKey {
     @Serializable
     data object  Login: Screen
     @Serializable
-    data object Dashboard : Screen
+    data object OrderDashboard : Screen
     @Serializable
     data object KdsDashboard : Screen
     @Serializable
@@ -49,6 +49,22 @@ sealed interface Screen : NavKey {
 
     @Serializable
     data object  DashboardSelection: Screen
+
+    @Serializable
+    data object  PosDashboard: Screen
+
+
+    @Serializable
+    data object MenuItemDashboard: Screen
+    @Serializable
+    data object  CategoryDashboard: Screen
+
+    @Serializable
+     data object  ModifierDashboard: Screen
+
+    @Serializable
+    data object  MenuManagerDashboard: Screen
+
 
 }
 

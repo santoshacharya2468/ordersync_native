@@ -156,12 +156,15 @@ class PrinterSelectionViewModel @Inject constructor(private  val sessionManager:
                         EscPosConnection(selectedPrinter!!.address, selectedPrinter!!.port)
                     val connected=escPosConnection.connect()
                     if(!connected){
-                        Toast.makeText(context, "Printer not connected", Toast.LENGTH_SHORT).show()
+                        withContext(Dispatchers.Main){ Toast.makeText(context, "Printer not connected", Toast.LENGTH_SHORT).show() }
                         return@launch
                     }
-                    escPosConnection.printOrderReceipt(order)
+                   val printed= escPosConnection.printOrderReceipt(order)
+                    withContext(Dispatchers.Main){
+                        Toast.makeText(context, if (printed)"Order printed successfully" else "Failed to print", Toast.LENGTH_SHORT).show()
+                    }
                 } else {
-                    Toast.makeText(context, "Printer not connected", Toast.LENGTH_SHORT).show()
+                    withContext(Dispatchers.Main){ Toast.makeText(context, "Printer not connected", Toast.LENGTH_SHORT).show() }
                 }
             }
             catch (_: Exception){}
@@ -197,7 +200,7 @@ class EscPosConnection(private val ipAddress: String, private val port: Int) {
         }
     }
 
-    fun printOrderReceipt(order: Order) {
+    fun printOrderReceipt(order: Order): Boolean {
         try {
             val commands = StringBuilder()
 
@@ -227,8 +230,11 @@ class EscPosConnection(private val ipAddress: String, private val port: Int) {
             commands.append("\u001Bm")
             outputStream?.write(commands.toString().toByteArray())
             outputStream?.flush()
+            return  true
+
         } catch (e: Exception) {
             e.printStackTrace()
+            return  false
         }
     }
 

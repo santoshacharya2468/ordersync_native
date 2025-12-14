@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,14 +18,16 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.DeliveryDining
 import androidx.compose.material.icons.filled.Dining
-import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.PointOfSale
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,15 +46,16 @@ import com.orderpush.app.core.views.BaseView
 import com.orderpush.app.features.dashboard.presentation.viewmodel.DashboardSelectionViewModel
 
 enum class DashboardType {
-    OrderManager, KitchenManger, DeliveryManager, MenuManger
+    OrderManager, KitchenManger,POS, MenuManger,
 }
 
 fun DashboardType.toScreen(): Screen? {
     return when (this) {
-        DashboardType.OrderManager -> Screen.Dashboard
+        DashboardType.OrderManager -> Screen.OrderDashboard
         DashboardType.KitchenManger -> Screen.KdsDashboard
-        DashboardType.DeliveryManager -> null
-        DashboardType.MenuManger -> null
+        DashboardType.POS -> Screen.PosDashboard
+       // DashboardType.DeliveryManager -> null
+        DashboardType.MenuManger -> Screen.MenuManagerDashboard
     }
 }
 
@@ -59,8 +63,9 @@ fun DashboardType.getIcon(): ImageVector {
     return when (this) {
         DashboardType.OrderManager -> Icons.Default.Dining
         DashboardType.KitchenManger -> Icons.Default.Restaurant
-        DashboardType.DeliveryManager -> Icons.Default.DeliveryDining
-        DashboardType.MenuManger -> Icons.Default.MenuBook
+       // DashboardType.DeliveryManager -> Icons.Default.DeliveryDining
+        DashboardType.MenuManger -> Icons.AutoMirrored.Filled.MenuBook
+        DashboardType.POS -> Icons.Default.PointOfSale
     }
 }
 
@@ -68,8 +73,9 @@ fun DashboardType.getColor(): Color {
     return when (this) {
         DashboardType.OrderManager -> Color(0xFF6366F1)
         DashboardType.KitchenManger -> Color(0xFF8B5CF6)
-        DashboardType.DeliveryManager -> Color(0xFF10B981)
+       // DashboardType.DeliveryManager -> Color(0xFF10B981)
         DashboardType.MenuManger -> Color(0xFFF59E0B)
+        DashboardType.POS -> Color(0xFF009688)
     }
 }
 
@@ -77,40 +83,38 @@ fun DashboardType.getColor(): Color {
 @Composable
 fun DashboardSelectionScreen() {
     val viewmodel = hiltViewModel<DashboardSelectionViewModel>()
-    val selected = viewmodel.selected.collectAsState()
     val navigator = LocalNavigation.current
-
-    LaunchedEffect(selected.value) {
-        if (selected.value != null) {
-            val screen = selected.value!!.toScreen()
-            if (screen != null) {
-                navigator.replaceAll(screen)
-            }
-        }
-    }
-
     BaseView(
-        title = "Select Dashboard"
+        title = "Select Your Dashboard"
     ) {
-
-        LazyVerticalGrid(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp),
-            columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-
-
+        Column(
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize()
         ) {
-            items(DashboardType.entries) {
-                DashboardButton(
-                    type = it,
-                    onClick = { viewmodel.setDashboard(it) },
+            LazyVerticalGrid(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                columns = GridCells.FixedSize(500.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
+                verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically)
+            ) {
+                items(DashboardType.entries) {
+                    DashboardButton(
+                        type = it,
+                        onClick = {
 
-                )
+                            val screen = it.toScreen()
+                            if (screen != null) {
+                                viewmodel.setDashboard(it)
+                                navigator.replaceAll(screen)
+                            }
+                        },
+
+                        )
+                }
+
             }
-
         }
     }
 }
@@ -120,13 +124,13 @@ fun DashboardButton(
     modifier: Modifier= Modifier,
     type: DashboardType, onClick: () -> Unit) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(100.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 4.dp,
@@ -167,21 +171,18 @@ fun DashboardButton(
                 Text(
                     text = type.name
                         .replace(Regex("([a-z])([A-Z])"), "$1 $2"),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.Black
+                     style = MaterialTheme.typography.titleLarge
                 )
                 Text(
                     text = getDescriptionForType(type),
-                    fontSize = 12.sp,
-                    color = Color.Gray
+                      style = MaterialTheme.typography.titleSmall
                 )
             }
 
             Icon(
                 imageVector = Icons.Default.Dining,
                 contentDescription = "Navigate",
-                tint = Color.LightGray,
+                tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier
                     .width(20.dp)
                     .height(20.dp)
@@ -194,7 +195,9 @@ fun getDescriptionForType(type: DashboardType): String {
     return when (type) {
         DashboardType.OrderManager -> "Manage customer orders"
         DashboardType.KitchenManger -> "Kitchen operations"
-        DashboardType.DeliveryManager -> "Delivery tracking"
+        //DashboardType.DeliveryManager -> "Delivery tracking"
         DashboardType.MenuManger -> "Menu management"
+        DashboardType.POS -> "Point of Sale"
+
     }
 }

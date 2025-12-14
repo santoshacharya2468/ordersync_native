@@ -110,7 +110,7 @@ fun KdsOrderTileView(order: Order,
 
         ) {
             OrderHeaderView(order = order, settings = settings, onComplete = onComplete)
-            Spacer(modifier = Modifier.height(4.dp))
+            //Spacer(modifier = Modifier.height(4.dp))
             Row {
                 if(order.priorityAt!=null) {
                     PriorityTimerView(order)
@@ -125,14 +125,18 @@ fun KdsOrderTileView(order: Order,
 
                 )
                 {
-                    IconButton(
-                        modifier = Modifier.size(30.dp),
-                        onClick = {
-                            onSelected()
-                        }
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .width(80.dp)
+                            .clip(RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp))
+
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                            .clickable(onClick = onSelected)
                     ) {
                         Icon(imageVector = Icons.Default.MoreVert, contentDescription = "more action")
                     }
+
                 }
             }
             Box(

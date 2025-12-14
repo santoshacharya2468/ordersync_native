@@ -1,6 +1,9 @@
 package com.orderpush.app.features.order.presentation.viewmodel
+import android.content.Context
+import android.media.MediaPlayer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.orderpush.app.R
 import com.orderpush.app.core.network.ConnectivityObserver
 import com.orderpush.app.core.session.SessionManager
 import com.orderpush.app.features.order.data.model.Order
@@ -10,6 +13,7 @@ import com.orderpush.app.features.order.data.model.UpdateOrderRequest
 import com.orderpush.app.features.order.data.repository.SocketOrderData
 import com.orderpush.app.features.order.domain.repository.OrderRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
@@ -35,8 +39,11 @@ sealed class OrderUiState {
 class OrderViewModel @Inject constructor(
     private val repository: OrderRepository,
     private val sessionManager: SessionManager,
-    private  val networkObserver: ConnectivityObserver
+    private  val networkObserver: ConnectivityObserver,
+   @ApplicationContext context: Context
+
 ) : ViewModel() {
+    val mMediaPlayer = MediaPlayer.create(context, R.raw.newordersound)
     init {
         fullSync()
         startPeriodicOrderSync()
@@ -68,6 +75,7 @@ class OrderViewModel @Inject constructor(
             repository.subscribeOrders().collect { orderData ->
                 when (orderData) {
                     is SocketOrderData.OrderCreated -> {
+                        mMediaPlayer.start()
                         repository.saveOrder(orderData.order)
                     }
 

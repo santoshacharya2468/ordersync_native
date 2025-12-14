@@ -39,5 +39,8 @@ interface OrderDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun  saveOrders(orders: List<Order>)
 
+    @Query("SELECT * FROM `order` WHERE id = :id")
+     fun  getOrderDetails(id:String): Flow<Order?>
+
 
 }

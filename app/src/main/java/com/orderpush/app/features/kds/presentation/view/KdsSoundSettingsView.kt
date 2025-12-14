@@ -27,7 +27,6 @@ fun KdsSoundSettingsScreen(){
         title = "Notifications"
     ) {
         KdsCard {
-
             SettingSwitchItem(
                 title = "Enable new order notification sound",
                 checked = settings.newOrderNotification,
@@ -38,12 +37,8 @@ fun KdsSoundSettingsScreen(){
                         )
                     )
                 }
-
             )
-
             HorizontalDivider()
-
-
             SettingSliderItem(
                 value = settings.soundVolume.toFloat(),
                 title = "Sound volume",
@@ -55,7 +50,6 @@ fun KdsSoundSettingsScreen(){
                     )
                 }
             )
-
         }
     }
 }

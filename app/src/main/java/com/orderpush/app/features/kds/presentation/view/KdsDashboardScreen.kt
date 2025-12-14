@@ -18,8 +18,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Analytics
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.Print
@@ -206,6 +209,20 @@ fun KdsDashboardScreen() {
                             )
                         },
                         text = "Settings"
+
+                    )
+
+                    KdsActionButton(
+                        onClick = {
+                            navigator.push(Screen.DashboardSelection)
+                        },
+                        icon = {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                                contentDescription = "Back to dashboard mode selection"
+                            )
+                        },
+                        text = "Exit"
 
                     )
 

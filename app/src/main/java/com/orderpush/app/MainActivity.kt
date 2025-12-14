@@ -25,7 +25,7 @@ import com.orderpush.app.core.router.Screen
 import com.orderpush.app.core.session.SessionManager
 import com.orderpush.app.features.analytics.presentation.view.AnalyticsScreen
 import com.orderpush.app.features.auth.presentation.view.LoginScreen
-import com.orderpush.app.features.dashboard.presentation.view.DashboardScreen
+import com.orderpush.app.features.category.presentation.view.CategoryDashboardScreen
 import com.orderpush.app.features.dashboard.presentation.view.DashboardSelectionScreen
 import com.orderpush.app.features.kds.presentation.view.KdsDashboardScreen
 import com.orderpush.app.features.kds.presentation.view.KdsDisplaySettingsScreen
@@ -34,7 +34,12 @@ import com.orderpush.app.features.kds.presentation.view.KdsGeneralSettingsScreen
 import com.orderpush.app.features.kds.presentation.view.KdsSettingStationScreen
 import com.orderpush.app.features.kds.presentation.view.KdsSettingsScreen
 import com.orderpush.app.features.kds.presentation.view.KdsSoundSettingsScreen
-import com.orderpush.app.features.order.presentation.ui.OrderDetailsScreen
+import com.orderpush.app.features.menuItem.presentation.view.MenuItemDashboardScreen
+import com.orderpush.app.features.menumanger.presentation.view.MenuManagerDashboardScreen
+import com.orderpush.app.features.modifier.presentation.view.ModifierDashboardScreen
+import com.orderpush.app.features.order.presentation.view.OrderDetailsScreen
+import com.orderpush.app.features.order.presentation.view.OrderDashboardScreen
+import com.orderpush.app.features.pos.presentation.view.PosDashboardScreen
 import com.orderpush.app.features.printer.presentation.view.PrinterConnectionScreen
 import com.orderpush.app.features.printer.presentation.view.PrinterTypeSelectionScreen
 import com.orderpush.app.ui.theme.OrderpushAppTheme
@@ -113,10 +118,10 @@ class MainActivity : ComponentActivity() {
                             entry<Screen.Analytics> {
                                 AnalyticsScreen()
                             }
-                            entry<Screen.Dashboard>(
+                            entry<Screen.OrderDashboard>(
                                 metadata = ListDetailSceneStrategy.listPane(sceneKey = "dashboard_orders")
                             ) {
-                                DashboardScreen()
+                                OrderDashboardScreen()
                             }
                             entry<Screen.PrinterConnection>(
                                  metadata = ListDetailSceneStrategy.detailPane()
@@ -166,6 +171,25 @@ class MainActivity : ComponentActivity() {
 
                             entry<Screen.DashboardSelection> {
                                 DashboardSelectionScreen()
+                            }
+
+                            entry<Screen.PosDashboard> {
+                                PosDashboardScreen()
+                            }
+
+                            entry<Screen.CategoryDashboard> {
+                                CategoryDashboardScreen()
+                            }
+
+                            entry<Screen.MenuItemDashboard> {
+                                MenuItemDashboardScreen()
+                            }
+
+                            entry<Screen.ModifierDashboard> {
+                                ModifierDashboardScreen()
+                            }
+                            entry<Screen.MenuManagerDashboard> {
+                                MenuManagerDashboardScreen()
                             }
 
                         }

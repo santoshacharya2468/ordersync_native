@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
@@ -61,9 +62,6 @@ fun BaseView(
     scrollBehavior: TopAppBarScrollBehavior? = null,
     appBarColors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
 
-    // FAB Configuration
-    fab: FabConfig? = null,
-
     // Bottom Navigation Configuration
     bottomNavigationItems: List<NavigationItem> = emptyList(),
     selectedBottomNavIndex: Int = 0,
@@ -71,6 +69,8 @@ fun BaseView(
     // Bottom App Bar Configuration
     bottomAppBar: (@Composable () -> Unit)? = null,
     leading:(@Composable () ->Unit )? =null,
+    floatingActionButton: @Composable (() -> Unit) = {},
+    floatingActionButtonPosition: FabPosition = FabPosition.End,
 
     // Content
     content: @Composable  () -> Unit
@@ -78,6 +78,8 @@ fun BaseView(
     val navigator = LocalNavigation.current
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        floatingActionButton = floatingActionButton,
+        floatingActionButtonPosition = floatingActionButtonPosition,
         topBar = {
             if (title != null) {
                 TopAppBar(
