@@ -1,12 +1,9 @@
 package com.orderpush.app.features.order.presentation.view
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -32,12 +28,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.orderpush.app.core.extension.format
 import com.orderpush.app.core.views.AppButton
 import com.orderpush.app.core.views.AppButtonVariant
 import com.orderpush.app.features.order.data.model.Order
@@ -47,10 +45,6 @@ import com.orderpush.app.features.order.data.model.UpdateOrderRequest
 import com.orderpush.app.features.order.data.model.nextStepStatus
 import com.orderpush.app.features.order.presentation.viewmodel.OrderViewModel
 import com.orderpush.app.features.printer.presentation.viewmodel.PrinterSelectionViewModel
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toJavaLocalDateTime
-import kotlinx.datetime.toLocalDateTime
-import java.time.format.DateTimeFormatter
 
 enum class TabMenu{
     Order,Customer,Timeline
@@ -142,8 +136,6 @@ fun OrderContentView(
                     printerViewModel.printReceipt(order)
 
             })
-
-
              if(nextStatus.first!=null && nextStatus.second!=null)   AppButton(
                     text = nextStatus.second!!,
                     modifier = Modifier.weight(1f),
@@ -222,7 +214,7 @@ fun CustomerTabView(order: Order){
           order.storeCustomer.phone,
              modifier = Modifier.clickable{
                  val intent = Intent(Intent.ACTION_DIAL).apply {
-                     data = Uri.parse("tel:${order.storeCustomer.phone}")
+                     data ="tel:${order.storeCustomer.phone}".toUri()
                  }
                  context.startActivity(intent)
              }
@@ -233,14 +225,12 @@ fun CustomerTabView(order: Order){
 @Composable
 fun TimelineTabView(order: Order) {
     val placedAt by remember {
-       mutableStateOf( order.createdAt.toLocalDateTime(TimeZone.currentSystemDefault())
-            .toJavaLocalDateTime()
-            .format(DateTimeFormatter.ofPattern("EEE MMM d hh:mm:ss a")))
+       mutableStateOf( order.createdAt
+            .format("EEE MMM d hh:mm:ss a"))
     }
     val fulfilledAt by remember(order.fulfillmentTime) {
-       mutableStateOf( order.fulfillmentTime.toLocalDateTime(TimeZone.currentSystemDefault())
-            .toJavaLocalDateTime()
-            .format(DateTimeFormatter.ofPattern("EEE MMM d hh:mm:ss a")))
+        mutableStateOf( order.fulfillmentTime
+            .format("EEE MMM d hh:mm:ss a"))
     }
 
     Column(

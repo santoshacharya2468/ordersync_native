@@ -16,20 +16,26 @@ import kotlinx.datetime.Instant
 @Dao
 interface OrderDao {
 
-    @Query("""
+    @Query(
+        $$"""
     SELECT * FROM `order`
     WHERE (:fulfillmentFrom IS NULL OR fulfillmentTime >= :fulfillmentFrom)
       AND (:fulfillmentTo IS NULL OR fulfillmentTime <= :fulfillmentTo)
       AND (:mode IS NULL OR mode = :mode)
+       AND (:query IS NULL OR externalOrderId LIKE '%' || :query || '%' 
+          OR :query IS NULL OR notes LIKE '%' || :query || '%' 
+           OR storeCustomer LIKE '%' || :query || '%')
      AND (:statusListSize = 0 OR status IN (:statusList))
     ORDER BY
         CASE WHEN priorityAt IS NULL THEN 1 ELSE 0 END, 
         priorityAt ASC, fulfillmentTime ASC
-""")
+"""
+    )
     fun getOrders(
         fulfillmentFrom: Instant?,
         fulfillmentTo: Instant?,
         mode: OrderMode?,
+        query:String?,
         statusList: List<OrderStatus> = emptyList(),
         statusListSize: Int = statusList.size
     ): Flow<List<Order>>

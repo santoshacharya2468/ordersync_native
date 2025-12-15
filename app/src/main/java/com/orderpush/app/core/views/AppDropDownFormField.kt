@@ -2,6 +2,7 @@ package com.orderpush.app.core.views
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -13,8 +14,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
@@ -100,6 +103,126 @@ fun <T> AppDropDownFormField(
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
+        }
+    }
+}
+
+
+
+
+
+@Composable
+fun <T> AppDropDownFormFieldMultiSelect(
+    items: List<T>,
+    selectedItems: List<T>,
+    onItemsSelected: (List<T>) -> Unit,
+    label: String,
+    itemLabel: (T) -> String,
+    modifier: Modifier = Modifier,
+    multiSelect: Boolean = false
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        // Dropdown Button
+        OutlinedButton(
+            onClick = { expanded = !expanded },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = Color.Gray
+            )
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = if (selectedItems.isEmpty()) {
+                        label
+                    } else if (multiSelect) {
+                        "${selectedItems.size} selected"
+                    } else {
+                        itemLabel(selectedItems.first())
+                    },
+                    fontSize = 16.sp,
+                    color = if (selectedItems.isEmpty()) Color.Gray else Color.White
+                )
+                androidx.compose.material3.Icon(
+                    imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = "Dropdown arrow",
+                    tint = Color.White
+                )
+            }
+        }
+
+        // Dropdown Menu
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .background(MaterialTheme.colorScheme.surfaceContainer, RoundedCornerShape(12.dp))
+        ) {
+            items.forEach { item ->
+                val isChecked=selectedItems.contains(item)
+                DropdownMenuItem(
+                    text = {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().clickable{
+                                val updatedList = if (isChecked) {
+                                    selectedItems + item
+                                } else {
+                                    selectedItems - item
+                                }
+                                onItemsSelected(updatedList)
+                            },
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            if (multiSelect) {
+                                Checkbox(
+                                    checked = isChecked,
+                                    onCheckedChange = { isChecked ->
+                                        val updatedList = if (isChecked) {
+                                            selectedItems + item
+                                        } else {
+                                            selectedItems - item
+                                        }
+                                        onItemsSelected(updatedList)
+                                    }
+                                )
+                            }
+                            Text(
+                                text = itemLabel(item),
+                                 style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+                    },
+                    onClick = {
+                        if (!multiSelect) {
+                            onItemsSelected(listOf(item))
+                            expanded = false
+                        }
+                    },
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
+            if(multiSelect)
+                AppButton(
+                text = "Confirm",
+                 variant = AppButtonVariant.Secondary,
+                onClick = {
+                    expanded = false
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.orderpush.app.features.order.presentation.viewmodel
 import android.content.Context
 import android.media.MediaPlayer
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.orderpush.app.R
@@ -44,6 +45,8 @@ class OrderViewModel @Inject constructor(
 
 ) : ViewModel() {
     val mMediaPlayer = MediaPlayer.create(context, R.raw.newordersound)
+    var showOrdersAndDetailsView = mutableStateOf(true)
+    var showSearchBox = mutableStateOf(false)
     init {
         fullSync()
         startPeriodicOrderSync()

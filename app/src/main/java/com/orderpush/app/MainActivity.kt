@@ -119,7 +119,7 @@ class MainActivity : ComponentActivity() {
                                 AnalyticsScreen()
                             }
                             entry<Screen.OrderDashboard>(
-                                metadata = ListDetailSceneStrategy.listPane(sceneKey = "dashboard_orders")
+
                             ) {
                                 OrderDashboardScreen()
                             }
@@ -129,11 +129,9 @@ class MainActivity : ComponentActivity() {
                                 PrinterConnectionScreen(it.printerType)
                             }
                             entry<Screen.OrderDetails>(
-                                metadata = ListDetailSceneStrategy.detailPane(
-                                     sceneKey = "dashboard_orders"
-                                )
+
                             ) {
-                                OrderDetailsScreen(it.id)
+                                OrderDetailsScreen(it.id,showAsFullPage = true)
                             }
                             entry<Screen.KdsGeneralSettings>(
                                 metadata = ListDetailSceneStrategy.detailPane(),

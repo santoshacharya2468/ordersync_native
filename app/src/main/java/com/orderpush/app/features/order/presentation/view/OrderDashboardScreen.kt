@@ -13,16 +13,26 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -37,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.orderpush.app.core.extension.filterByTab
 import com.orderpush.app.core.router.LocalNavigation
 import com.orderpush.app.core.router.Screen
 import com.orderpush.app.core.views.BaseView
@@ -45,6 +56,7 @@ import com.orderpush.app.features.dashboard.data.model.toOrderStatus
 import com.orderpush.app.features.order.data.model.Order
 import com.orderpush.app.features.order.data.model.OrderStatus
 import com.orderpush.app.features.order.data.model.UpdateOrderRequest
+import com.orderpush.app.features.order.data.model.appliedCount
 import com.orderpush.app.features.order.presentation.viewmodel.OrderUiState
 import com.orderpush.app.features.order.presentation.viewmodel.OrderViewModel
 
@@ -58,6 +70,8 @@ fun OrderDashboardScreen(
     val navigator= LocalNavigation.current
     var selectedOrder by remember { mutableStateOf<Order?>(null) }
     var selectedTab by remember{mutableStateOf<OrderFilterTabMenu>(OrderFilterTabMenu.All)}
+    val filterState=viewModel.filterState.collectAsState()
+
     val pendingOrders by remember {
         derivedStateOf {
             if( state.value is OrderUiState.Success) (state.value as OrderUiState.Success).orders.filter {
@@ -66,17 +80,26 @@ fun OrderDashboardScreen(
         }
     }
     var showOrderFilterDialog by remember { mutableStateOf(false) }
-    AnimatedVisibility(visible = showOrderFilterDialog) {
-        OrderFilterDialogView(
-            filter = viewModel.filterState.collectAsState().value,
-            onChange = {
-                viewModel.updateFilter(it)
-            },
-            onClose = {
-                showOrderFilterDialog = false
+    val displayOrders by remember {
+        derivedStateOf() {
+            if (state.value is OrderUiState.Success) {
+                (state.value as OrderUiState.Success).orders.filterByTab(selectedTab)
             }
-        )
+            else emptyList()
+
+        }
     }
+
+    fun onOrderSelected(order: Order){
+        if(viewModel.showOrdersAndDetailsView.value){
+            selectedOrder = order
+        }
+        else{
+            navigator.push(Screen.OrderDetails(order.id,))
+        }
+    }
+
+
     BaseView(
         title = "",
         leading = {
@@ -84,7 +107,7 @@ fun OrderDashboardScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 ActionButton(
-                    icon = Icons.Default.Home,
+                    icon = Icons.AutoMirrored.Filled.ArrowBackIos,
                     modifier = Modifier.padding(start = 20.dp),
                     onClick = {
                         navigator.push(Screen.DashboardSelection)
@@ -95,25 +118,41 @@ fun OrderDashboardScreen(
                     orders = if(state.value is OrderUiState.Success) (state.value as OrderUiState.Success).orders else emptyList(),
                     onClick = {
                         selectedTab = it
-                        viewModel.updateFilter(
-                            viewModel.filterState.value.copy(
-                                statues = if(it.toOrderStatus()!=null)listOf(it.toOrderStatus()!!)  else emptyList()
-                            )
-                        )
                     }
                 )
             }
         },
         actions = {
-            ActionButton(
-                icon = Icons.Default.Search, onClick = {
+            if (viewModel.showSearchBox.value) TextField(
+                value = filterState.value.query?:"",
+                onValueChange = {
+                    viewModel.updateFilter(filterState.value.copy(query = it))
 
                 }
+
             )
+            ActionButton(
+                icon =Icons.Default.Refresh,
+                onClick = {
+                    viewModel.fullSync()
+                })
+            ActionButton(
+                icon = if(viewModel.showSearchBox.value)Icons.Default.Close else  Icons.Default.Search, onClick = {
+                    viewModel.showSearchBox.value = !viewModel.showSearchBox.value
+                    if(!viewModel.showSearchBox.value){
+                        viewModel.updateFilter(filterState.value.copy(query = null))
+                    }
+                }
+            )
+            ActionButton(icon = Icons.Default.FilterList,
+                count = filterState.value.appliedCount(),
+                onClick = { showOrderFilterDialog = true })
+            ActionButton(
+                icon =if(viewModel.showOrdersAndDetailsView.value)Icons.AutoMirrored.Filled.MenuBook  else  Icons.AutoMirrored.Filled.List,
+                onClick = {
+                viewModel.showOrdersAndDetailsView.value =!viewModel.showOrdersAndDetailsView.value
+            })
 
-            ActionButton(icon = Icons.Default.FilterList) { showOrderFilterDialog = true }
-
-            ActionButton(icon = Icons.AutoMirrored.Filled.MenuBook) { }
         }
     ) {
 
@@ -128,13 +167,13 @@ fun OrderDashboardScreen(
                         verticalArrangement = Arrangement.spacedBy(10.dp),
                         modifier = Modifier.padding(10.dp)
                     ) {
-                        items((state.value as OrderUiState.Success).orders) {
+                        items(displayOrders) {
                             OrderTileView(
                                 order = it,
                                 modifier = Modifier.padding(horizontal = 4.dp),
                                 selected = it.id == selectedOrder?.id,
                                 onClick = {
-                                    selectedOrder = it
+                                    onOrderSelected(it)
                                 })
                         }
                     }
@@ -150,7 +189,9 @@ fun OrderDashboardScreen(
                         items(pendingOrders, key = { it.id }) {
                             PendingOrderView(
                                 order = it,
-
+                                onClicked = {
+                                    onOrderSelected(it)
+                                },
                                 modifier = Modifier
                                     .width(300.dp)
                                     .wrapContentHeight()
@@ -177,7 +218,7 @@ fun OrderDashboardScreen(
             }
 
             AnimatedVisibility(
-                visible = selectedOrder!=null,
+                visible = selectedOrder!=null && viewModel.showOrdersAndDetailsView.value,
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(600.dp)
@@ -185,7 +226,10 @@ fun OrderDashboardScreen(
             ) {
                 Row {
                     Box(
-                        modifier = Modifier.fillMaxHeight().width(4.dp).background(Color.White)
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(4.dp)
+                            .background(Color.White)
                     ) { }
                     key(selectedOrder?.id) {
                         selectedOrder?.let {   OrderDetailsScreen(it.id) }
@@ -194,10 +238,31 @@ fun OrderDashboardScreen(
 
             }
         }
+
+        AnimatedVisibility(visible = showOrderFilterDialog) {
+            BasicAlertDialog(
+                onDismissRequest = {
+                    showOrderFilterDialog = false
+                }
+            ) {
+                OrderFilterDialogView(
+                    filter = viewModel.filterState.collectAsState().value,
+                    onChange = {
+                        viewModel.updateFilter(it)
+                    },
+                    onClose = {
+                        showOrderFilterDialog = false
+                    }
+                )
+            }
+
+        }
     }
+
+
 }
 @Composable
-fun ActionButton(icon: ImageVector, modifier: Modifier= Modifier, onClick:()-> Unit){
+fun ActionButton(icon: ImageVector, modifier: Modifier= Modifier, onClick:()-> Unit,count:Int?=null){
     IconButton(
         modifier = modifier
             .size(46.dp)
@@ -207,7 +272,24 @@ fun ActionButton(icon: ImageVector, modifier: Modifier= Modifier, onClick:()-> U
             ),
         onClick = onClick
     ){
-        Icon(imageVector = icon, contentDescription = "", tint = MaterialTheme.colorScheme.onSurface)
+        Box(){
+            Icon(
+                imageVector = icon,
+                contentDescription = "",
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+            if(count!=null && count>0)Box(
+                modifier= Modifier.size(16.dp).background(MaterialTheme.colorScheme.onSurface,
+
+                    CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("$count", style = MaterialTheme.typography.labelSmall.copy(
+                     color = Color.Red
+                ))
+            }
+        }
     }
 
 }

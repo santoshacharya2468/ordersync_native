@@ -107,29 +107,36 @@ fun OrderTileView(
                 OrderTimeRemainingView(order)
                 StatusBadge(status = order.status)
             }
-            Row(
-                modifier = Modifier.fillMaxWidth().wrapContentHeight(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                IconLabelChip(
-                    icon = order.mode.icon(),
-                    label =order.mode.namePlaceHolder()
-                )
-                IconLabelChip(
-                    icon = Icons.Default.RestaurantMenu,
-                    label = "${order.orderItems?.size} items"
-                )
-                IconLabelChip(
-                    icon = Icons.Default.LocalOffer,
-                    label = "$${String.format("%.2f", order.total)}"
-                )
-            }
+            OrderTypePriceCounterView(order)
 
             bottomContent()
         }
     }
 }
+
+@Composable
+fun OrderTypePriceCounterView(order: Order){
+    Row(
+        modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        IconLabelChip(
+            icon = order.mode.icon(),
+            label =order.mode.namePlaceHolder()
+        )
+        IconLabelChip(
+            icon = Icons.Default.RestaurantMenu,
+            label = "${order.orderItems?.size} items"
+        )
+        IconLabelChip(
+            icon = Icons.Default.LocalOffer,
+            label = "$${String.format("%.2f", order.total)}"
+        )
+    }
+}
+
+
 @Composable
 fun IconLabelChip(icon: ImageVector, label: String){
     Row(
@@ -185,7 +192,7 @@ private fun StatusBadge(status: OrderStatus) {
 }
 
 @Composable
-private fun getOrderModeColor(mode: OrderMode): Color {
+fun getOrderModeColor(mode: OrderMode): Color {
     return when (mode) {
         OrderMode.Delivery -> Color(0xFFFF6B35)
         OrderMode.Pickup -> Color(0xFFDC143C)

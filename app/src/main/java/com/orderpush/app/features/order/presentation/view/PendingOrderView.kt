@@ -26,96 +26,54 @@ fun PendingOrderView(
     order: Order,
     onAccept: () -> Unit = {},
     onDecline: () -> Unit = {},
+    onClicked: () -> Unit = {}
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
             .shadow(10.dp, RoundedCornerShape(12.dp)),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(8.dp),
+        onClick = onClicked,
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF1C1C1C) // optional: dark card background
         )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
-        ) {
+                .padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
 
-            // Top Row: Icon + "New order" and Time
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = order.mode.icon(),
-                    contentDescription = null,
-                    tint = Color.Red,
-                    modifier = Modifier.size(22.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(
+                            color = getOrderModeColor(order.mode),
+                            shape = RoundedCornerShape(6.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = order.mode.icon(),
+                        contentDescription = order.mode.toString(),
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
                 Spacer(Modifier.width(6.dp))
                 Text(
-                    text = "New order",
+                    text = "${order.storeCustomer?.name}",
                     style = MaterialTheme.typography.titleMedium,
                     color = Color.White
                 )
-
-                Spacer(modifier = Modifier.weight(1f)) // pushes "1m" to end
-
-                Text(
-                    text = "1m",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.LightGray
-                )
-            }
-
-            Spacer(Modifier.height(4.dp))
-
-            // Customer + Price Row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = order.storeCustomer?.name ?: "Customer",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = Color.White
-                )
                 Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = "$${order.total}",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = Color.White
-                )
+                OrderTimeRemainingView(order)
             }
-
-            Spacer(Modifier.height(6.dp))
-
-            // Tags Row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                InfoChip(
-                    icon = order.mode.icon(),
-                    text = ""
-                )
-
-            if(order.mode== OrderMode.Delivery)    InfoChip(
-                    icon = Icons.Default.LocationOn,
-                    text = "2.4 mi away"
-                )
-
-                InfoChip(
-                    icon = Icons.Default.ShoppingBag,
-                    text = "${order.orderItems?.size ?: 0} items"
-                )
-            }
-
-            Spacer(Modifier.height(8.dp))
-
-            // Action Buttons Row
+             OrderTypePriceCounterView(order)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -155,28 +113,5 @@ fun PendingOrderView(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun InfoChip(icon: ImageVector, text: String) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .background(Color(0xFF2C2C2C), RoundedCornerShape(8.dp))
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-    ) {
-        Icon(
-            icon,
-            contentDescription = null,
-            tint = Color.White,
-            modifier = Modifier.size(16.dp)
-        )
-        Spacer(Modifier.width(4.dp))
-        Text(
-            text,
-            color = Color.White,
-            style = MaterialTheme.typography.bodySmall
-        )
     }
 }

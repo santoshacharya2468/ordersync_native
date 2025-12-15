@@ -14,6 +14,7 @@ data class OrderFilter(val page:Int?=null,val limit:Int=10000,val mode: OrderMod
     val fromDate: LocalDateTime?=null,
     val  toDate: LocalDateTime?=null,
     val station:String ? =null,
+                       val query:String?=null,
     val updatedAt:Long= Clock.System.now().epochSeconds,
                        var lastSync:String?=null
     )
@@ -61,7 +62,7 @@ fun OrderFilter.toDefaultToDate(): Instant {
 }
 
 
-fun OrderFilter.appliedCount():Int{
+fun  OrderFilter.appliedCount():Int{
     var count=0
     if(statues.isNotEmpty()){
         count++

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,11 +30,13 @@ import com.orderpush.app.core.views.AppBarAction
 import com.orderpush.app.core.views.AppButton
 import com.orderpush.app.core.views.AppButtonVariant
 import com.orderpush.app.core.views.AppDropDownFormField
+import com.orderpush.app.core.views.AppDropDownFormFieldMultiSelect
 import com.orderpush.app.core.views.BaseView
 import com.orderpush.app.core.views.DateTimeField
 import com.orderpush.app.features.order.data.model.OrderFilter
 import com.orderpush.app.features.order.data.model.OrderMode
 import com.orderpush.app.features.order.data.model.OrderStatus
+import com.orderpush.app.features.order.data.model.namePlaceHolder
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
@@ -60,26 +63,29 @@ fun OrderFilterDialogView(
             modifier = modifier
                 .background(color = MaterialTheme.colorScheme.background)
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            AppDropDownFormFieldMultiSelect(
+                 items = OrderStatus.entries,
+                multiSelect = true,
+                label = "Status",
+                 selectedItems = statues,
+                itemLabel = {it.name.replace("_"," ")},
+                onItemsSelected = {
+                    statues = it
+
+                }
+            )
             AppDropDownFormField(
                 items = OrderMode.entries.toList(),
                 label = "Mode",
                 selectedItem = mode,
-                itemLabel = { m -> m.name },
+                itemLabel = { m -> m.namePlaceHolder() },
                 onItemSelected = { mode = it }
             )
 
-//            AppDropDownFormField(
-//                items = OrderStatus.entries.toList(),
-//                label = "Status",
-//                selectedItem = status,
-//                itemLabel = { s -> s.name },
-//                onItemSelected = { status = it }
-//            )
-
-            // Order From DateTime Field
             DateTimeField(
                 label = "Order From",
                 dateTime = orderFrom,
@@ -105,7 +111,7 @@ fun OrderFilterDialogView(
                     onClick = {
                         val newFilter = filter.copy(
                             mode = mode,
-
+                            statues = statues,
                             toDate = orderTo,
                             fromDate = orderFrom
                         )
@@ -123,7 +129,7 @@ fun OrderFilterDialogView(
                     onClick = {
                         val newFilter = filter.copy(
                             mode = null,
-
+                            statues = emptyList(),
                             toDate = null,
                             fromDate = null
                         )

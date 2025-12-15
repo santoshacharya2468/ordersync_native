@@ -62,6 +62,7 @@ class OrderRepositoryImpl @Inject constructor(private val api: OrderApi,
             fulfillmentFrom = filter.toDefaultFromDate(),
             fulfillmentTo = filter.toDefaultToDate(),
             statusList = filter.statues,
+            query = filter.query,
             mode = filter.mode).map { orders->
             val filteredOrders = orders
                 .filter { order ->
