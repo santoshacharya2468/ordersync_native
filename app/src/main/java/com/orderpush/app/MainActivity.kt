@@ -37,8 +37,8 @@ import com.orderpush.app.features.kds.presentation.view.KdsSoundSettingsScreen
 import com.orderpush.app.features.menuItem.presentation.view.MenuItemDashboardScreen
 import com.orderpush.app.features.menumanger.presentation.view.MenuManagerDashboardScreen
 import com.orderpush.app.features.modifier.presentation.view.ModifierDashboardScreen
-import com.orderpush.app.features.order.presentation.view.OrderDetailsScreen
 import com.orderpush.app.features.order.presentation.view.OrderDashboardScreen
+import com.orderpush.app.features.order.presentation.view.OrderDetailsScreen
 import com.orderpush.app.features.pos.presentation.view.PosDashboardScreen
 import com.orderpush.app.features.printer.presentation.view.PrinterConnectionScreen
 import com.orderpush.app.features.printer.presentation.view.PrinterTypeSelectionScreen

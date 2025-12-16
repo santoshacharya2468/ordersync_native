@@ -2,7 +2,6 @@ package com.orderpush.app.features.printer.presentation.view
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +29,7 @@ import com.orderpush.app.core.router.LocalNavigation
 import com.orderpush.app.core.router.Screen
 import com.orderpush.app.core.views.BaseView
 import com.orderpush.app.features.printer.presentation.viewmodel.PrinterType
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrinterTypeSelectionScreen(){

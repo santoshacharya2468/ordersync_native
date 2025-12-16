@@ -4,7 +4,6 @@ import com.orderpush.app.core.network.APIResponse
 import com.orderpush.app.core.services.DeviceInfo
 import com.orderpush.app.features.auth.data.model.EmailPasswordLoginRequest
 import com.orderpush.app.features.auth.data.model.LinkedDevice
-import com.orderpush.app.features.auth.data.model.LoginRequest
 import com.orderpush.app.features.auth.data.model.LoginResponse
 import com.orderpush.app.features.auth.data.model.LogoutDeviceRequest
 import com.orderpush.app.features.auth.data.model.RefreshTokenRequest
@@ -12,7 +11,6 @@ import com.orderpush.app.features.auth.data.model.UpdateDeviceRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path

@@ -1,20 +1,11 @@
 package com.orderpush.app.features.kds.presentation.view
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.orderpush.app.core.views.BaseView
-import com.orderpush.app.features.kds.data.model.KdsSettings
 import com.orderpush.app.features.kds.presentation.viewmodel.KdsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)

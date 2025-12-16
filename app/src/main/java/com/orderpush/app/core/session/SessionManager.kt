@@ -1,7 +1,6 @@
 package com.orderpush.app.core.session
 
 import android.content.SharedPreferences
-import javax.inject.Inject
 import androidx.core.content.edit
 import com.google.gson.Gson
 import com.orderpush.app.core.database.AppDatabase
@@ -9,6 +8,7 @@ import com.orderpush.app.features.dashboard.presentation.view.DashboardType
 import com.orderpush.app.features.printer.presentation.viewmodel.BasePrinter
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import javax.inject.Inject
 import javax.inject.Singleton
 
 class SessionManager @Inject constructor(

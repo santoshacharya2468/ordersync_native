@@ -4,8 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.orderpush.app.features.kds.data.model.KdsSettings
-import com.orderpush.app.features.kds.data.model.Station
 import com.orderpush.app.features.order.data.model.Order
 import com.orderpush.app.features.order.data.model.OrderMode
 import com.orderpush.app.features.order.data.model.OrderStatus

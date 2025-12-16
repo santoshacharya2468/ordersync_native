@@ -5,13 +5,11 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.orderpush.app.core.network.isSuccess
-import com.orderpush.app.core.services.getDeviceInfo
 import com.orderpush.app.core.session.SessionEventBus
 import com.orderpush.app.core.session.SessionManager
 import com.orderpush.app.features.auth.data.model.LinkedDevice
 import com.orderpush.app.features.auth.data.model.UpdateDeviceRequest
 import com.orderpush.app.features.auth.domain.repository.AuthRepository
-import com.orderpush.app.features.auth.presentation.viewmodel.AuthState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject

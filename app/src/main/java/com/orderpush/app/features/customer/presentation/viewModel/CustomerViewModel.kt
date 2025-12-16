@@ -1,6 +1,5 @@
 package com.orderpush.app.features.customer.presentation.viewModel
 
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.orderpush.app.features.customer.data.model.Customer

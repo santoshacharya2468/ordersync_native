@@ -3,11 +3,9 @@ package com.orderpush.app.core.di
 import KotlinxInstantAdapter
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.hilt.work.HiltWorkerFactory
 import androidx.room.Room
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
-import androidx.work.WorkerFactory
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.orderpush.app.core.database.AppDatabase
@@ -20,7 +18,6 @@ import com.orderpush.app.core.network.NetworkConfiguration
 import com.orderpush.app.core.services.SocketManager
 import com.orderpush.app.core.session.SessionEventBus
 import com.orderpush.app.core.session.SessionManager
-import dagger.Module
 import com.orderpush.app.features.auth.data.api.AuthApi
 import com.orderpush.app.features.auth.data.repository.AuthRepositoryImpl
 import com.orderpush.app.features.auth.domain.repository.AuthRepository
@@ -30,15 +27,13 @@ import com.orderpush.app.features.customer.domain.repository.CustomerRepository
 import com.orderpush.app.features.kds.data.api.StationApi
 import com.orderpush.app.features.kds.data.repository.KdsRepositoryImpl
 import com.orderpush.app.features.kds.domain.repository.KdsRepository
-import com.orderpush.app.features.menuItem.data.api.MenuItemApi
-import com.orderpush.app.features.menuItem.data.repository.MenuItemRepositoryImpl
-import com.orderpush.app.features.menuItem.domain.repository.MenuItemRepository
 import com.orderpush.app.features.order.data.api.OrderApi
 import com.orderpush.app.features.order.data.repository.OrderRepositoryImpl
 import com.orderpush.app.features.order.domain.repository.OrderRepository
 import com.orderpush.app.features.store.data.api.StoreApi
 import com.orderpush.app.features.store.data.repository.StoreRepositoryImpl
 import com.orderpush.app.features.store.domain.repository.StoreRepository
+import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext

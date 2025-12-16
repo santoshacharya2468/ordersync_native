@@ -32,12 +32,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.orderpush.app.features.kds.data.model.KdsFontSize
-import com.orderpush.app.features.kds.data.model.KdsSettings
-import com.orderpush.app.features.kds.presentation.viewmodel.KdsViewModel
 import androidx.core.graphics.toColorInt
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.orderpush.app.core.views.BaseView
+import com.orderpush.app.features.kds.data.model.KdsFontSize
+import com.orderpush.app.features.kds.presentation.viewmodel.KdsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

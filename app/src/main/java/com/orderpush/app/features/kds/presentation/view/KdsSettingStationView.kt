@@ -1,5 +1,4 @@
 package com.orderpush.app.features.kds.presentation.view
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -10,10 +9,10 @@ import com.orderpush.app.core.views.AppDropDownFormField
 import com.orderpush.app.core.views.BaseView
 import com.orderpush.app.features.auth.data.model.UpdateDeviceRequest
 import com.orderpush.app.features.auth.presentation.viewmodel.AuthViewModel
-import com.orderpush.app.features.kds.data.model.KdsSettings
 import com.orderpush.app.features.kds.presentation.viewmodel.KdsViewModel
 import com.orderpush.app.features.kds.presentation.viewmodel.StationUIState
 import com.orderpush.app.features.kds.presentation.viewmodel.StationViewModel
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KdsSettingStationScreen(){

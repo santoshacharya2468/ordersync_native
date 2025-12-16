@@ -5,12 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.orderpush.app.core.services.DeviceInfo
 import com.orderpush.app.core.services.getDeviceInfo
-import com.orderpush.app.features.kds.data.model.KdsFontSize
 import com.orderpush.app.features.kds.data.model.KdsSettings
 import com.orderpush.app.features.kds.domain.repository.KdsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.ViewModelScoped
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

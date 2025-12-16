@@ -3,9 +3,6 @@ package com.orderpush.app.features.modifier.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.orderpush.app.core.network.isSuccess
-import com.orderpush.app.features.category.data.model.request.CategoryFilter
-import com.orderpush.app.features.category.data.model.response.Category
-import com.orderpush.app.features.category.domain.repository.CategoryRepository
 import com.orderpush.app.features.modifier.data.model.request.ModifierFilter
 import com.orderpush.app.features.modifier.data.model.response.MenuModifier
 import com.orderpush.app.features.modifier.domain.repository.ModifierRepository

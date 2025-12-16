@@ -3,7 +3,6 @@ package com.orderpush.app.features.order.domain.repository
 import com.orderpush.app.core.network.APIResponse
 import com.orderpush.app.features.order.data.model.Order
 import com.orderpush.app.features.order.data.model.OrderFilter
-import com.orderpush.app.features.order.data.model.OrderItem
 import com.orderpush.app.features.order.data.model.UpdateOrderItemRequest
 import com.orderpush.app.features.order.data.model.UpdateOrderRequest
 import com.orderpush.app.features.order.data.repository.SocketOrderData

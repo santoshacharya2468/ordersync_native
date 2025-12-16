@@ -17,13 +17,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.BasicAlertDialog
@@ -52,7 +49,6 @@ import com.orderpush.app.core.router.LocalNavigation
 import com.orderpush.app.core.router.Screen
 import com.orderpush.app.core.views.BaseView
 import com.orderpush.app.features.dashboard.data.model.OrderFilterTabMenu
-import com.orderpush.app.features.dashboard.data.model.toOrderStatus
 import com.orderpush.app.features.order.data.model.Order
 import com.orderpush.app.features.order.data.model.OrderStatus
 import com.orderpush.app.features.order.data.model.UpdateOrderRequest
@@ -69,7 +65,7 @@ fun OrderDashboardScreen(
     val state=viewModel.uiState.collectAsState()
     val navigator= LocalNavigation.current
     var selectedOrder by remember { mutableStateOf<Order?>(null) }
-    var selectedTab by remember{mutableStateOf<OrderFilterTabMenu>(OrderFilterTabMenu.All)}
+    var selectedTab by remember{mutableStateOf(OrderFilterTabMenu.All)}
     val filterState=viewModel.filterState.collectAsState()
 
     val pendingOrders by remember {
@@ -81,7 +77,7 @@ fun OrderDashboardScreen(
     }
     var showOrderFilterDialog by remember { mutableStateOf(false) }
     val displayOrders by remember {
-        derivedStateOf() {
+        derivedStateOf {
             if (state.value is OrderUiState.Success) {
                 (state.value as OrderUiState.Success).orders.filterByTab(selectedTab)
             }
@@ -95,7 +91,7 @@ fun OrderDashboardScreen(
             selectedOrder = order
         }
         else{
-            navigator.push(Screen.OrderDetails(order.id,))
+            navigator.push(Screen.OrderDetails(order.id))
         }
     }
 
@@ -125,17 +121,12 @@ fun OrderDashboardScreen(
         actions = {
             if (viewModel.showSearchBox.value) TextField(
                 value = filterState.value.query?:"",
+                maxLines = 1,
+                singleLine = true,
                 onValueChange = {
                     viewModel.updateFilter(filterState.value.copy(query = it))
-
                 }
-
             )
-            ActionButton(
-                icon =Icons.Default.Refresh,
-                onClick = {
-                    viewModel.fullSync()
-                })
             ActionButton(
                 icon = if(viewModel.showSearchBox.value)Icons.Default.Close else  Icons.Default.Search, onClick = {
                     viewModel.showSearchBox.value = !viewModel.showSearchBox.value
@@ -144,6 +135,12 @@ fun OrderDashboardScreen(
                     }
                 }
             )
+
+            ActionButton(
+                icon =Icons.Default.Refresh,
+                onClick = {
+                    viewModel.fullSync()
+                })
             ActionButton(icon = Icons.Default.FilterList,
                 count = filterState.value.appliedCount(),
                 onClick = { showOrderFilterDialog = true })
@@ -156,7 +153,7 @@ fun OrderDashboardScreen(
         }
     ) {
 
-        Row(){
+        Row{
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -216,7 +213,6 @@ fun OrderDashboardScreen(
 
                 }
             }
-
             AnimatedVisibility(
                 visible = selectedOrder!=null && viewModel.showOrdersAndDetailsView.value,
                 modifier = Modifier
@@ -272,7 +268,7 @@ fun ActionButton(icon: ImageVector, modifier: Modifier= Modifier, onClick:()-> U
             ),
         onClick = onClick
     ){
-        Box(){
+        Box{
             Icon(
                 imageVector = icon,
                 contentDescription = "",

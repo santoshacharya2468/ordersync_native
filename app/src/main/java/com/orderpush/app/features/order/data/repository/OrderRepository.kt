@@ -7,7 +7,6 @@ import com.orderpush.app.core.database.OrderDao
 import com.orderpush.app.core.extension.toApiResponse
 import com.orderpush.app.core.network.APIResponse
 import com.orderpush.app.core.network.NetworkConfiguration
-import com.orderpush.app.core.network.isSuccess
 import com.orderpush.app.core.services.SocketManager
 import com.orderpush.app.core.services.SocketOrderEvent
 import com.orderpush.app.core.session.SessionManager
@@ -32,8 +31,6 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import okio.IOException
 import javax.inject.Inject
-import kotlin.collections.filter
-import kotlin.collections.map
 
 sealed class  SocketOrderData {
    data  class OrderCreated(val order: Order) : SocketOrderData()

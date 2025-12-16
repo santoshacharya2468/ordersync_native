@@ -1,6 +1,5 @@
 package com.orderpush.app.features.printer.data.repository
 
-import com.orderpush.app.features.printer.data.model.BasePrinter
 import com.orderpush.app.features.printer.data.model.XPrinter
 import com.orderpush.app.features.printer.domain.PrinterRepository
 

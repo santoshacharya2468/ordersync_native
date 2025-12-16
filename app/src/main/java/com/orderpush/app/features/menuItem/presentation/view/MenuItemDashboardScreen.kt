@@ -16,10 +16,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.orderpush.app.core.views.BaseView
-import com.orderpush.app.features.category.presentation.viewmodel.CategoryViewModel
 import com.orderpush.app.features.menuItem.presentation.viewmodel.MenuItemUIState
 import com.orderpush.app.features.menuItem.presentation.viewmodel.MenuItemViewModel
-import com.orderpush.app.features.pos.presentation.view.PosMenuTileView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

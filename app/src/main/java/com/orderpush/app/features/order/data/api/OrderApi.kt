@@ -2,9 +2,7 @@ package com.orderpush.app.features.order.data.api
 
 import com.orderpush.app.core.network.APIResponse
 import com.orderpush.app.features.order.data.model.Order
-import com.orderpush.app.features.order.data.model.OrderFilter
 import com.orderpush.app.features.order.data.model.OrderListResponse
-import com.orderpush.app.features.order.data.model.UpdateOrderItemRequest
 import com.orderpush.app.features.order.data.model.UpdateOrderItemsPayload
 import com.orderpush.app.features.order.data.model.UpdateOrderRequest
 import retrofit2.Response
@@ -12,7 +10,6 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.Path
-import retrofit2.http.Query
 import retrofit2.http.QueryMap
 
 interface OrderApi {

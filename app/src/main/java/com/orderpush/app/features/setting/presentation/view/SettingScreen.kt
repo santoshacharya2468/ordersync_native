@@ -11,7 +11,6 @@ import com.orderpush.app.core.router.LocalNavigation
 import com.orderpush.app.core.router.Screen
 import com.orderpush.app.core.views.AppButton
 import com.orderpush.app.core.views.BaseView
-import com.orderpush.app.features.auth.presentation.view.LoginScreen
 import com.orderpush.app.features.auth.presentation.viewmodel.AuthState
 import com.orderpush.app.features.auth.presentation.viewmodel.AuthViewModel
 

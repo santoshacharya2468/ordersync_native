@@ -1,8 +1,5 @@
 package com.orderpush.app.core.di
 
-import com.orderpush.app.features.category.data.api.CategoryApi
-import com.orderpush.app.features.category.data.repository.CategoryRepositoryImpl
-import com.orderpush.app.features.category.domain.repository.CategoryRepository
 import com.orderpush.app.features.modifier.data.api.ModifierApi
 import com.orderpush.app.features.modifier.data.repository.ModifierRepositoryImpl
 import com.orderpush.app.features.modifier.domain.repository.ModifierRepository

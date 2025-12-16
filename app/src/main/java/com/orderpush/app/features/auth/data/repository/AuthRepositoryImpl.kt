@@ -2,14 +2,11 @@ package com.orderpush.app.features.auth.data.repository
 
 import com.orderpush.app.core.extension.toApiResponse
 import com.orderpush.app.core.network.APIResponse
-import com.orderpush.app.core.network.isSuccess
-import com.orderpush.app.core.services.DeviceInfo
 import com.orderpush.app.core.services.getDeviceInfo
 import com.orderpush.app.core.session.SessionManager
 import com.orderpush.app.features.auth.data.api.AuthApi
 import com.orderpush.app.features.auth.data.model.EmailPasswordLoginRequest
 import com.orderpush.app.features.auth.data.model.LinkedDevice
-import com.orderpush.app.features.auth.data.model.LoginRequest
 import com.orderpush.app.features.auth.data.model.LoginResponse
 import com.orderpush.app.features.auth.data.model.LogoutDeviceRequest
 import com.orderpush.app.features.auth.data.model.UpdateDeviceRequest
